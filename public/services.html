@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lola's Party | Services</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+body { font-family: 'Poppins', sans-serif; }
+.script-font { font-family: 'Great Vibes', cursive; }
+
+/* Smooth card animation */
+.service-card {
+  transition: all 0.35s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+</style>
+</head>
+
+<body class="bg-[#faf9f7] text-gray-700 flex flex-col min-h-screen">
+
+<div id="navbar-container"></div>
+
+<!-- HEADER -->
+<header class="bg-[#f3eef7] py-24 text-center px-6">
+  <h2 class="script-font text-4xl text-[#b39bc8] mb-4">
+    Our curated collections
+  </h2>
+  <h1 class="text-4xl font-semibold text-gray-900">
+    Our Services
+  </h1>
+  <p class="mt-6 text-gray-500 max-w-2xl mx-auto">
+    Every package includes delivery, setup, and professional sanitization.
+  </p>
+</header>
+
+<!-- SERVICES GRID -->
+<main id="main-content" class="flex-grow max-w-7xl mx-auto px-6 py-20">
+
+  <div id="loading-spinner" class="flex justify-center items-center py-20">
+      <div class="w-10 h-10 border-4 border-gray-200 border-t-[#a084ca] rounded-full animate-spin"></div>
+  </div>
+
+  <div id="services-grid"
+       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+  </div>
+
+</main>
+
+<footer class="py-10 text-center text-sm text-gray-400">
+© 2026 Lola's Party • Licensed & Insured
+</footer>
+
+<!-- FIREBASE SCRIPT -->
+<script src="utils.js"></script>
+<script src="firebase-init.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const CATEGORIES = {
+  "Soft Play": { page: "softplaypackages.html", prefix: "SP-", description: "Premium soft play sets with ball pits, climbing blocks, and slides — perfect for little ones." },
+  "Tablescapes": { page: "tablespaces.html", prefix: "TS-", description: "Stylish table setups with seating, themed decor, and optional activity add-ons." },
+  "Mini Bouncers": { page: "minibouncers.html", prefix: "BH-", description: "Compact bounce houses sized just right for toddlers and small spaces." },
+  "Party Favors": { page: "partyfavors.html", prefix: "PF-", description: "Custom party favors — chip bags, gable boxes, centerpieces, and more." }
+};
+
+function buildCard(catName, catInfo, imageUrl) {
+  const card = document.createElement('div');
+  card.className = 'service-card bg-white rounded-[40px] border border-[#efe7f5] overflow-hidden flex flex-col';
+
+  const link = document.createElement('a');
+  link.href = catInfo.page;
+  link.className = 'block h-56 overflow-hidden relative group';
+
+  if (imageUrl) {
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.alt = catName;
+    img.className = 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300';
+    link.appendChild(img);
+  } else {
+    const placeholder = document.createElement('div');
+    placeholder.className = 'w-full h-full bg-[#f3eef7] flex items-center justify-center text-[#b39bc8] text-lg';
+    placeholder.textContent = catName;
+    link.appendChild(placeholder);
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-25 transition-all flex items-center justify-center pointer-events-none';
+  const overlayText = document.createElement('span');
+  overlayText.className = 'text-white text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-40 px-4 py-2 rounded-full';
+  overlayText.textContent = 'View Collection';
+  overlay.appendChild(overlayText);
+  link.appendChild(overlay);
+  card.appendChild(link);
+
+  const body = document.createElement('div');
+  body.className = 'p-8 flex flex-col flex-grow';
+
+  const title = document.createElement('h3');
+  title.className = 'text-lg font-semibold text-gray-900 mb-4';
+  title.textContent = catName;
+  body.appendChild(title);
+
+  const desc = document.createElement('p');
+  desc.className = 'text-gray-500 text-sm mb-6';
+  desc.textContent = catInfo.description;
+  body.appendChild(desc);
+
+  const btn = document.createElement('a');
+  btn.href = catInfo.page;
+  btn.className = 'mt-auto text-center bg-[#a084ca] text-white py-3 rounded-full hover:bg-[#8f6bbf] transition';
+  btn.textContent = 'View Collection';
+  body.appendChild(btn);
+
+  card.appendChild(body);
+  return card;
+}
+
+async function loadServices() {
+  const grid = document.getElementById("services-grid");
+  grid.textContent = '';
+
+  try {
+    const { db } = await window.initFirebase({ initializeApp, getFirestore });
+
+    const snapshot = await getDocs(collection(db, "inventory"));
+
+    // Pick a cover photo from the first active item with photos per category
+    const categoryPhotos = {};
+    snapshot.forEach(doc => {
+      const item = doc.data();
+      if (item.is_active === false) return;
+      for (const [catName, catInfo] of Object.entries(CATEGORIES)) {
+        if (doc.id.startsWith(catInfo.prefix) && !categoryPhotos[catName]) {
+          const photos = item.photos || [];
+          if (photos.length > 0) categoryPhotos[catName] = photos[0];
+        }
+      }
+    });
+
+    document.getElementById('loading-spinner').style.display = 'none';
+    grid.textContent = '';
+
+    for (const [catName, catInfo] of Object.entries(CATEGORIES)) {
+      grid.appendChild(buildCard(catName, catInfo, categoryPhotos[catName] || ''));
+    }
+
+  } catch (error) {
+    console.error("loadServices error:", error);
+    document.getElementById('loading-spinner').style.display = 'none';
+    grid.textContent = '';
+    const errMsg = document.createElement('div');
+    errMsg.className = 'col-span-full text-center';
+    const errText = document.createElement('p');
+    errText.className = 'text-red-500 mb-4';
+    errText.textContent = 'Unable to load services. Please try again later.';
+    const retryBtn = document.createElement('button');
+    retryBtn.className = 'bg-[#a084ca] text-white px-6 py-2 rounded-full hover:bg-[#8f6bbf] transition font-medium text-sm';
+    retryBtn.textContent = 'Try Again';
+    retryBtn.addEventListener('click', loadServices);
+    errMsg.appendChild(errText);
+    errMsg.appendChild(retryBtn);
+    grid.appendChild(errMsg);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadServices);
+</script>
+
+<script src="navbar.js"></script>
+
+</body>
+</html>

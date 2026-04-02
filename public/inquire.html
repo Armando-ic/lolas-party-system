@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Lola's Party | Inquire</title>
+
+    <meta name="description" content="Soft play rentals, party decor, and event packages by Lola's Party in Woodbridge, VA." />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .hero-bg { background-image: linear-gradient(135deg, rgba(160, 132, 202, 0.08), rgba(143, 107, 191, 0.05)); }
+
+        .item-card.selected { border-color: #a084ca; background-color: #f3eef7; box-shadow: 0 4px 10px rgba(160, 132, 202, 0.15); }
+        
+        .pac-container {
+            border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.08); font-family: inherit; z-index: 1000; 
+        }
+        .pac-item { padding: 10px; font-size: 14px; cursor: pointer; }
+        .pac-item:hover { background-color: #f3eef7; }
+    </style>
+</head>
+
+<body class="antialiased text-gray-800 font-sans flex flex-col min-h-screen">
+
+    <div id="navbar-container"></div>
+
+    <main id="main-content" class="flex-grow">
+        <section class="hero-bg py-8 md:py-10">
+            <div class="max-w-4xl mx-auto px-4 md:px-6 text-center">
+                <!-- Default hero (no pre-selection) -->
+                <div id="hero-default">
+                    <p class="text-[#b39bc8] text-2xl md:text-3xl mb-2" style="font-family: ‘Great Vibes’, cursive;">let’s start your adventure</p>
+                    <h1 class="text-2xl md:text-4xl font-extrabold leading-tight text-gray-900">Build Your Party Package</h1>
+                    <p class="text-gray-500 mt-3 text-sm md:text-base">Choose your setup, add party favors, and submit for approval — no payment today.</p>
+                </div>
+                <!-- Dynamic hero (when ?select= param present) -->
+                <div id="hero-selected" class="hidden">
+                    <p class="text-gray-500 text-sm mb-1">You’re building a package around</p>
+                    <h1 class="text-2xl md:text-4xl font-extrabold text-[#8f6bbf]" id="hero-package-name"></h1>
+                    <p class="text-gray-500 mt-2 text-sm">Customize your order below, then submit for approval.</p>
+                </div>
+            </div>
+            <!-- Step indicator (5 steps) -->
+            <div class="flex justify-center items-center gap-1 mt-6 text-xs font-bold">
+                <span class="px-2 py-1 rounded-full bg-[#a084ca] text-white">1</span>
+                <span class="w-6 h-px bg-gray-300"></span>
+                <span class="px-2 py-1 rounded-full bg-gray-200 text-gray-500">2</span>
+                <span class="w-6 h-px bg-gray-300"></span>
+                <span class="px-2 py-1 rounded-full bg-gray-200 text-gray-500">3</span>
+                <span class="w-6 h-px bg-gray-300"></span>
+                <span class="px-2 py-1 rounded-full bg-gray-200 text-gray-500">4</span>
+                <span class="w-6 h-px bg-gray-300"></span>
+                <span class="px-2 py-1 rounded-full bg-gray-200 text-gray-500">5</span>
+            </div>
+        </section>
+
+        <section id="inquiry-success" class="hidden max-w-3xl mx-auto px-4 py-16 my-10 bg-white rounded-3xl shadow-xl border border-[#f3eef7] text-center">
+            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-check text-5xl text-green-500"></i>
+            </div>
+            <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Inquiry Received! ✨</h2>
+            <p class="text-gray-600 text-lg mb-8 px-8">Thank you! Our team is reviewing your package details and event location to ensure we can make your party magical.</p>
+            
+            <div class="bg-[#f9f5fc] border border-[#f3eef7] text-[#4a3560] p-6 rounded-2xl inline-block text-left mb-10 max-w-lg shadow-sm">
+                <h3 class="font-bold text-lg mb-3"><i class="fas fa-clipboard-list mr-2"></i> What happens next?</h3>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-start"><i class="fas fa-truck mt-1 mr-3 text-[#b39bc8]"></i> We verify delivery logistics and date availability.</li>
+                    <li class="flex items-start"><i class="fas fa-envelope mt-1 mr-3 text-[#b39bc8]"></i> You receive an approval email within 24-48 hours.</li>
+                    <li class="flex items-start"><i class="fas fa-credit-card mt-1 mr-3 text-[#b39bc8]"></i> The email contains a secure link to pay your deposit and lock in your date!</li>
+                </ul>
+            </div>
+            
+            <div>
+                <a href="index.html" class="bg-gray-900 hover:bg-gray-800 text-white font-bold py-4 px-10 rounded-xl transition-all shadow-md">Return to Home</a>
+            </div>
+        </section>
+
+        <section id="booking" class="max-w-5xl mx-auto px-4 md:px-6 py-12 bg-white rounded-3xl shadow-xl border border-[#f3eef7] my-10">
+            <div class="text-center mb-10">
+                <p class="text-gray-500">Submit your details below for approval. No payment required today.</p>
+            </div>
+
+            <form id="booking-form" onsubmit="event.preventDefault();">
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="event-date" class="block text-sm font-bold text-gray-700 mb-2">1. Event Date</label>
+                        <input type="date" id="event-date" required class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none">
+                    </div>
+                    <div>
+                        <label for="event-time" class="block text-sm font-bold text-gray-700 mb-2">2. Start Time</label>
+                        <input type="time" id="event-time" required class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none">
+                        <p class="text-xs text-gray-500 mt-2"><i class="fas fa-clock text-[#b39bc8]"></i> Soft Play packages are for a maximum of 3 hours.</p>
+                    </div>
+                    
+                    <div class="md:col-span-2 mt-2">
+                        <label for="extra-hours" class="block text-sm font-bold text-gray-700 mb-2">Request Additional Time ($30/hr)</label>
+                        <select id="extra-hours" class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none">
+                            <option value="0">Standard 3-Hour Rental (No Extra Time)</option>
+                            <option value="1">+1 Hour (+$30.00)</option>
+                            <option value="2">+2 Hours (+$60.00)</option>
+                            <option value="3">+3 Hours (+$90.00)</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-2"><i class="fas fa-info-circle text-[#b39bc8]"></i> Extra time is pending admin approval and will be finalized before payment.</p>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label for="event-address" class="block text-sm font-bold text-gray-700 mb-2">3. Event Address</label>
+                    <input type="text" id="event-address" placeholder="123 Party Lane, VA" required class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none">
+                </div>
+
+                <div class="mb-6">
+                    <label for="venue-type" class="block text-sm font-bold text-gray-700 mb-2">Venue Type</label>
+                    <select id="venue-type" class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none">
+                        <option value="">Select venue type...</option>
+                        <option value="House">House</option>
+                        <option value="Apartment / Condo">Apartment / Condo</option>
+                        <option value="Townhouse">Townhouse</option>
+                        <option value="Gated Community">Gated Community</option>
+                        <option value="Park / Outdoor Venue">Park / Outdoor Venue</option>
+                        <option value="Event Hall / Indoor Venue">Event Hall / Indoor Venue</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div id="venue-conditional" class="hidden mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Apartment / Condo fields -->
+                    <div id="vc-apartment" class="hidden contents">
+                        <input type="text" id="vc-floor-unit" placeholder="Floor / Unit #" class="p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none">
+                        <select id="vc-elevator" class="p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none">
+                            <option value="">Elevator available?</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <!-- Gated Community fields -->
+                    <div id="vc-gated" class="hidden md:col-span-2">
+                        <input type="text" id="vc-gate-code" placeholder="Gate code or entry instructions" class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none">
+                    </div>
+                    <!-- Park / Outdoor fields -->
+                    <div id="vc-park" class="hidden contents">
+                        <input type="text" id="vc-shelter" placeholder="Shelter / Pavilion #" class="p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none">
+                        <select id="vc-electrical" class="p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none">
+                            <option value="">Electrical access?</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <!-- Event Hall fields -->
+                    <div id="vc-hall" class="hidden contents">
+                        <input type="text" id="vc-venue-name" placeholder="Venue name" class="p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none">
+                        <select id="vc-loading-dock" class="p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none">
+                            <option value="">Loading dock available?</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-10">
+                    <label for="delivery-notes" class="block text-sm font-bold text-gray-700 mb-2">Any special delivery instructions?</label>
+                    <textarea id="delivery-notes" rows="2" placeholder="e.g. Use side entrance, park on the street, ring doorbell..." class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-[#a084ca] outline-none resize-none"></textarea>
+                </div>
+
+                <div class="mb-12 pt-6 border-t border-gray-100">
+                    <label class="block text-sm font-bold text-gray-700 mb-4 flex items-center">
+                        <span class="bg-[#f3eef7] text-[#6b4f8a] px-3 py-1 rounded-full text-xs mr-3">Step 4</span> Choose your Soft Play Packages
+                    </label>
+                    <div id="loading-items" class="text-gray-500 animate-pulse bg-gray-50 p-6 rounded-xl text-center border border-dashed border-gray-300">Scanning inventory...</div>
+                    <fieldset id="inventory-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></fieldset>
+                </div>
+
+                <div class="mb-10 pt-8 border-t border-gray-100">
+                    <label class="block text-sm font-bold text-gray-700 mb-4 flex items-center">
+                        <span class="bg-[#f3eef7] text-[#6b4f8a] px-3 py-1 rounded-full text-xs mr-3">Step 5</span> Add Party Favors (Optional)
+                    </label>
+                    <p class="text-xs text-gray-500 mb-4">Delivered alongside your Soft Play package. No extra delivery fees.</p>
+                    <fieldset id="favors-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></fieldset>
+                </div>
+
+                <div class="text-center pt-6 border-t border-gray-100">
+                    <button type="button" id="btn-check-availability" class="bg-gray-900 text-white text-lg font-bold px-10 py-4 rounded-full shadow-lg hover:bg-[#8f6bbf] transition-all w-full md:w-auto">
+                        Generate Quote & Check Date
+                    </button>
+                </div>
+            </form>
+
+            <div id="error-box" class="hidden mt-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-center"></div>
+
+            <div id="quote-result" class="hidden mt-8 bg-gray-900 text-white p-8 rounded-2xl shadow-2xl">
+                <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
+                    <h3 class="text-2xl font-bold text-green-400">✅ Looks Good!</h3>
+                    <span class="text-gray-400 text-sm" id="q-dist"></span>
+                </div>
+
+                <div class="space-y-3 text-lg mb-8">
+                    <div class="flex justify-between"><span>Subtotal (Packages & Favors)</span><span id="q-sub"></span></div>
+                    
+                    <div id="q-extra-row" class="hidden justify-between text-[#b39bc8]"><span>Additional Time Requested</span><span id="q-extra"></span></div>
+                    
+                    <div class="flex justify-between"><span>Delivery (Softplay Only)</span><span id="q-del"></span></div>
+                    <div class="flex justify-between"><span>Tax (6%)</span><span id="q-tax"></span></div>
+                    <div class="flex justify-between text-2xl font-bold pt-4 border-t border-gray-700 mt-2">
+                        <span class="text-[#b39bc8]">Estimated Total</span>
+                        <span id="q-total"></span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                    <h4 class="text-lg font-bold mb-4 text-white">Final Step: Your Details</h4>
+                    <p class="text-xs text-gray-400 mb-4">We will send your approval and payment link here.</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="cust-name" class="block text-xs font-bold text-gray-400 mb-1">Full Name <span class="text-red-400">*</span></label>
+                            <input type="text" id="cust-name" placeholder="Full Name" required class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-[#a084ca] outline-none">
+                        </div>
+                        <div>
+                            <label for="cust-phone" class="block text-xs font-bold text-gray-400 mb-1">Phone Number <span class="text-red-400">*</span></label>
+                            <input type="text" id="cust-phone" placeholder="Phone Number" required class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-[#a084ca] outline-none">
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <label for="cust-email" class="block text-xs font-bold text-gray-400 mb-1">Email Address <span class="text-red-400">*</span></label>
+                        <input type="email" id="cust-email" placeholder="Email Address" required class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-[#a084ca] outline-none">
+                    </div>
+                    
+                    <button id="btn-submit-inquiry" class="w-full bg-[#a084ca] hover:bg-[#8f6bbf] text-white font-bold py-4 rounded-xl shadow-lg transition-all text-lg">
+                        Submit Inquiry for Approval 🚀
+                    </button>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <script src="utils.js"></script>
+    <script src="firebase-init.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Package name mapping for dynamic hero (matches Firestore inventory IDs)
+        const PACKAGE_NAMES = {
+            'SP-001': 'Petite Package', 'SP-002': 'Luxe Package', 'SP-003': 'Grand Luxe Package',
+            'TS-001': 'Small Table & Seating', 'TS-002': 'Large Table & Seating',
+            'TS-003': 'Table w/ Design & Setup', 'TS-004': 'Table w/ Activity',
+            'BH-001': 'Mini Castle', 'BH-002': 'Baby Blue Bouncer', 'BH-003': 'Mini Pink Bouncer'
+        };
+
+        let app, db;
+
+        function showError(msg) {
+            const box = document.getElementById('error-box');
+            box.textContent = msg;
+            box.classList.remove('hidden');
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => box.classList.add('hidden'), 8000);
+        }
+
+        // NEW: Secure Dynamic Initialization
+        async function initializeSystem() {
+            try {
+                const result = await window.initFirebase({ initializeApp, getFirestore });
+                app = result.app;
+                db = result.db;
+
+                // Dynamically load Google Maps securely!
+                if (result.config.mapsKey) {
+                    const script = document.createElement('script');
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=${result.config.mapsKey}&libraries=places`;
+                    script.async = true;
+                    script.defer = true;
+                    script.onload = () => {
+                        const input = document.getElementById("event-address");
+                        if (input) {
+                            new google.maps.places.Autocomplete(input, { componentRestrictions: { country: "us" }, types: ["address"] });
+                        }
+                    };
+                    document.head.appendChild(script);
+                }
+
+                loadItems(); // Fire database read after db is ready
+            } catch (e) {
+                console.error("Failed to initialize system:", e);
+                document.getElementById("loading-items").innerText = "Connection error. Please refresh.";
+            }
+        }
+
+        async function loadItems() {
+            const softplayGrid = document.getElementById("inventory-grid");
+            const favorsGrid = document.getElementById("favors-grid");
+            const loader = document.getElementById("loading-items");
+            
+            try {
+                const snapshot = await getDocs(query(collection(db, "inventory")));
+                loader.style.display = "none";
+
+                snapshot.forEach(doc => {
+                    const item = doc.data();
+                    if (item.is_active === false) return;
+
+                    if (item.category === "Party Favors") {
+                        favorsGrid.appendChild(createFavorCard(doc.id, item.name, item.price, item.photos));
+                    } else {
+                        softplayGrid.appendChild(createCheckboxCard(doc.id, item.name, item.price, "party-items", item.photos));
+                    }
+                });
+
+                // Auto-select items from URL query params (e.g. ?select=SP-001,BH-002)
+                const preSelect = new URLSearchParams(window.location.search).get('select');
+                if (preSelect) {
+                    try {
+                        preSelect.split(',').forEach(id => {
+                            if (!/^[A-Z]{2}-\d{3}$/.test(id)) return;
+                            const cb = document.querySelector(`input[value="${id}"]`);
+                            if (cb) {
+                                cb.checked = true;
+                                cb.dispatchEvent(new Event('change'));
+                            }
+                        });
+                        setTimeout(() => {
+                            document.getElementById('inventory-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                    } catch (e) { console.warn('Pre-select failed:', e); }
+                }
+            } catch (e) {
+                console.error("Database Error:", e);
+                loader.innerText = "Error loading inventory. Please refresh.";
+            }
+        }
+
+        function buildItemDetailsHtml(id) {
+            const prefix = id.substring(0, 3);
+
+            if (prefix === 'BH-') {
+                // Mini Bouncers: child name, age, custom decals toggle (+$40), notes
+                return '<p class="text-xs text-gray-500 italic">Help us personalize this bouncer for your child!</p>'
+                    + '<div class="grid grid-cols-2 gap-3">'
+                    + '  <div>'
+                    + '    <label class="text-xs font-semibold text-gray-600 block mb-1">Child\'s Name</label>'
+                    + '    <input type="text" class="item-child-name w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none" placeholder="e.g. Sofia">'
+                    + '  </div>'
+                    + '  <div>'
+                    + '    <label class="text-xs font-semibold text-gray-600 block mb-1">Child\'s Age</label>'
+                    + '    <input type="text" class="item-child-age w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none" placeholder="e.g. 5">'
+                    + '  </div>'
+                    + '</div>'
+                    + '<div>'
+                    + '  <label class="flex items-center gap-3 cursor-pointer group">'
+                    + '    <input type="checkbox" class="item-decal-toggle hidden">'
+                    + '    <div class="w-10 h-5 rounded-full bg-gray-300 relative transition-colors decal-track flex-shrink-0">'
+                    + '      <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform decal-thumb shadow-sm"></div>'
+                    + '    </div>'
+                    + '    <span class="text-sm font-semibold text-gray-700">Custom Decals <span class="text-[#a084ca] font-bold">(+$40)</span></span>'
+                    + '  </label>'
+                    + '  <div class="decal-fields hidden mt-3 space-y-3 pl-3 border-l-2 border-[#a084ca] ml-2">'
+                    + '    <div>'
+                    + '      <label class="text-xs font-semibold text-gray-600 block mb-1">Decal Theme</label>'
+                    + '      <input type="text" class="item-decal-theme w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none" placeholder="e.g. Unicorn, Dinosaurs, Princess">'
+                    + '    </div>'
+                    + '    <div>'
+                    + '      <label class="text-xs font-semibold text-gray-600 block mb-1">Child\'s Name for Decal</label>'
+                    + '      <input type="text" class="item-decal-name w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none" placeholder="e.g. Sofia">'
+                    + '    </div>'
+                    + '  </div>'
+                    + '</div>'
+                    + '<div>'
+                    + '  <label class="text-xs font-semibold text-gray-600 block mb-1">Special Requests / Notes</label>'
+                    + '  <textarea class="item-notes w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none resize-none" rows="2" placeholder="e.g. Extra cushions, specific color preferences..."></textarea>'
+                    + '</div>';
+            }
+
+            if (prefix === 'TS-') {
+                // Tablescapes: child name, age, event theme, number of kids, preferred activity, notes
+                return '<p class="text-xs text-gray-500 italic">Help us personalize this tablescape for your event!</p>'
+                    + '<div class="grid grid-cols-2 gap-3">'
+                    + '  <div>'
+                    + '    <label class="text-xs font-semibold text-gray-600 block mb-1">Child\'s Name</label>'
+                    + '    <input type="text" class="item-child-name w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none" placeholder="e.g. Sofia">'
+                    + '  </div>'
+                    + '  <div>'
+                    + '    <label class="text-xs font-semibold text-gray-600 block mb-1">Child\'s Age</label>'
+                    + '    <input type="text" class="item-child-age w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none" placeholder="e.g. 5">'
+                    + '  </div>'
+                    + '</div>'
+                    + '<div>'
+                    + '  <label class="text-xs font-semibold text-gray-600 block mb-1">Event Theme</label>'
+                    + '  <input type="text" class="item-theme w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none" placeholder="e.g. Safari, Pink & Gold, Bluey">'
+                    + '</div>'
+                    + '<div class="grid grid-cols-2 gap-3">'
+                    + '  <div>'
+                    + '    <label class="text-xs font-semibold text-gray-600 block mb-1">Number of Kids</label>'
+                    + '    <input type="number" min="1" max="30" class="item-num-kids w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none" placeholder="e.g. 10">'
+                    + '  </div>'
+                    + '  <div>'
+                    + '    <label class="text-xs font-semibold text-gray-600 block mb-1">Preferred Activity</label>'
+                    + '    <select class="item-activity w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none bg-white">'
+                    + '      <option value="">Select an activity...</option>'
+                    + '      <option value="Decorate Your Own Cupcake">Decorate Your Own Cupcake</option>'
+                    + '      <option value="Paint a Little Easel">Paint a Little Easel</option>'
+                    + '      <option value="Create Your Own Hair Decor">Create Your Own Hair Decor</option>'
+                    + '      <option value="Make Your Own Bracelet">Make Your Own Bracelet</option>'
+                    + '      <option value="Make Your Own Keychain">Make Your Own Keychain</option>'
+                    + '      <option value="No Activity">No Activity</option>'
+                    + '    </select>'
+                    + '  </div>'
+                    + '</div>'
+                    + '<div>'
+                    + '  <label class="text-xs font-semibold text-gray-600 block mb-1">Special Requests / Notes</label>'
+                    + '  <textarea class="item-notes w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none resize-none" rows="2" placeholder="e.g. Specific color scheme, extra seating..."></textarea>'
+                    + '</div>';
+            }
+
+            // Default: Soft Play packages (SP-)
+            return '<p class="text-xs text-gray-500 italic">Help us personalize this setup for your child!</p>'
+                + '<div class="grid grid-cols-2 gap-3">'
+                + '  <div>'
+                + '    <label class="text-xs font-semibold text-gray-600 block mb-1">Child\'s Name</label>'
+                + '    <input type="text" class="item-child-name w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none" placeholder="e.g. Sofia">'
+                + '  </div>'
+                + '  <div>'
+                + '    <label class="text-xs font-semibold text-gray-600 block mb-1">Child\'s Age</label>'
+                + '    <input type="text" class="item-child-age w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none" placeholder="e.g. 5">'
+                + '  </div>'
+                + '</div>'
+                + '<div>'
+                + '  <label class="text-xs font-semibold text-gray-600 block mb-1">Theme / Color Scheme</label>'
+                + '  <input type="text" class="item-theme w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none" placeholder="e.g. Safari, Pink & Gold, Bluey">'
+                + '</div>'
+                + '<div>'
+                + '  <label class="text-xs font-semibold text-gray-600 block mb-1">Special Requests / Notes</label>'
+                + '  <textarea class="item-notes w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none resize-none" rows="2" placeholder="e.g. Add a balloon arch, include extra cushions..."></textarea>'
+                + '</div>';
+        }
+
+        function createCheckboxCard(id, name, price, inputName, photos) {
+            const safeName = escapeHtml(name);
+            const safeId = escapeHtml(id);
+            const safePrice = escapeHtml(price);
+            const photoUrl = photos && photos.length > 0 ? photos[0] : null;
+            const photoHtml = photoUrl
+                ? '<img src="' + escapeHtml(photoUrl) + '" alt="' + safeName + '" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">'
+                : '<div class="w-14 h-14 rounded-lg bg-[#f3eef7] flex items-center justify-center flex-shrink-0"><span class="text-[#b39bc8] font-bold text-lg">' + safeName.charAt(0) + '</span></div>';
+
+            const card = document.createElement("div");
+            card.className = "item-card border border-gray-200 rounded-xl bg-white transition-all";
+            card.dataset.itemId = id;
+
+            // Build card using DOM-safe innerHTML with all user values escaped
+            card.innerHTML = '<label class="flex items-start gap-3 p-4 cursor-pointer hover:border-[#b39bc8]">'
+                + photoHtml
+                + '<div class="flex-grow min-w-0">'
+                + '  <div class="flex justify-between items-start">'
+                + '    <span class="font-bold text-gray-800 text-sm leading-tight pr-2">' + safeName + '</span>'
+                + '    <input type="checkbox" value="' + safeId + '" name="' + escapeHtml(inputName) + '" class="hidden custom-checkbox">'
+                + '    <div class="w-5 h-5 flex-shrink-0 rounded-full border-2 border-gray-300 flex items-center justify-center checkbox-ui transition-colors">'
+                + '      <svg class="w-3 h-3 text-white opacity-0 checkmark" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>'
+                + '    </div>'
+                + '  </div>'
+                + '  <div class="mt-1 text-[#a084ca] font-bold text-sm">+$' + safePrice + '</div>'
+                + '</div>'
+                + '</label>'
+                + '<div class="item-details hidden px-4 pb-4 pt-2 space-y-3 border-t border-gray-100 mt-2">'
+                + buildItemDetailsHtml(id)
+                + '</div>';
+
+            const checkbox = card.querySelector(".custom-checkbox");
+            const checkboxUI = card.querySelector(".checkbox-ui");
+            const checkmark = card.querySelector(".checkmark");
+            const details = card.querySelector(".item-details");
+
+            // Wire up decal toggle for BH- items
+            const decalToggle = card.querySelector(".item-decal-toggle");
+            if (decalToggle) {
+                const decalFields = card.querySelector(".decal-fields");
+                const decalTrack = card.querySelector(".decal-track");
+                const decalThumb = card.querySelector(".decal-thumb");
+                decalToggle.addEventListener("change", () => {
+                    if (decalToggle.checked) {
+                        decalFields.classList.remove("hidden");
+                        decalTrack.classList.add("bg-[#a084ca]");
+                        decalTrack.classList.remove("bg-gray-300");
+                        decalThumb.style.transform = "translateX(1.25rem)";
+                    } else {
+                        decalFields.classList.add("hidden");
+                        decalTrack.classList.remove("bg-[#a084ca]");
+                        decalTrack.classList.add("bg-gray-300");
+                        decalThumb.style.transform = "translateX(0)";
+                        card.querySelector(".item-decal-theme").value = "";
+                        card.querySelector(".item-decal-name").value = "";
+                    }
+                });
+            }
+
+            checkbox.addEventListener("change", () => {
+                if (checkbox.checked) {
+                    card.classList.add("selected", "border-[#b39bc8]", "bg-[#f9f5fc]");
+                    checkboxUI.classList.add("bg-[#a084ca]", "border-[#a084ca]");
+                    checkmark.classList.remove("opacity-0");
+                    details.classList.remove("hidden");
+                } else {
+                    card.classList.remove("selected", "border-[#b39bc8]", "bg-[#f9f5fc]");
+                    checkboxUI.classList.remove("bg-[#a084ca]", "border-[#a084ca]");
+                    checkmark.classList.add("opacity-0");
+                    details.classList.add("hidden");
+                    // Reset common fields
+                    const childName = card.querySelector(".item-child-name");
+                    const childAge = card.querySelector(".item-child-age");
+                    const theme = card.querySelector(".item-theme");
+                    const notes = card.querySelector(".item-notes");
+                    if (childName) childName.value = "";
+                    if (childAge) childAge.value = "";
+                    if (theme) theme.value = "";
+                    if (notes) notes.value = "";
+                    // Reset BH- specific fields
+                    if (decalToggle) {
+                        decalToggle.checked = false;
+                        decalToggle.dispatchEvent(new Event('change'));
+                    }
+                    // Reset TS- specific fields
+                    const numKids = card.querySelector(".item-num-kids");
+                    const activity = card.querySelector(".item-activity");
+                    if (numKids) numKids.value = "";
+                    if (activity) activity.value = "";
+                }
+            });
+
+            // Stop clicks inside details from toggling the checkbox
+            details.addEventListener("click", (e) => e.stopPropagation());
+            card.querySelector("label").addEventListener("click", (e) => {
+                if (e.target.closest(".item-details")) e.preventDefault();
+            });
+
+            return card;
+        }
+
+        function createFavorCard(id, name, price, photos) {
+            const safeName = escapeHtml(name);
+            const safeId = escapeHtml(id);
+            const photoUrl = photos && photos.length > 0 ? photos[0] : null;
+            const photoHtml = photoUrl
+                ? `<img src="${escapeHtml(photoUrl)}" alt="${safeName}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">`
+                : `<div class="w-14 h-14 rounded-lg bg-[#f3eef7] flex items-center justify-center flex-shrink-0"><span class="text-[#b39bc8] font-bold text-lg">${safeName.charAt(0)}</span></div>`;
+
+            const card = document.createElement("div");
+            card.className = "favor-card border border-gray-200 rounded-xl bg-white transition-all";
+            card.dataset.favorId = id;
+            card.dataset.unitPrice = price;
+            card.innerHTML = `
+                <label class="flex items-start gap-3 p-4 cursor-pointer hover:border-[#b39bc8]">
+                    ${photoHtml}
+                    <div class="flex-grow min-w-0 flex justify-between items-start">
+                        <span class="font-bold text-gray-800 text-sm leading-tight pr-2">${safeName}</span>
+                        <input type="checkbox" value="${safeId}" name="favor-items" class="hidden favor-checkbox">
+                        <div class="w-5 h-5 flex-shrink-0 rounded-full border-2 border-gray-300 flex items-center justify-center checkbox-ui transition-colors">
+                            <svg class="w-3 h-3 text-white opacity-0 checkmark" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                    </div>
+                </label>
+                <div class="px-4 pb-1">
+                    <span class="text-[#a084ca] font-bold text-sm favor-price-label">+$${parseFloat(price).toFixed(2)}</span>
+                </div>
+                <div class="favor-details hidden px-4 pb-4 pt-2 space-y-3 border-t border-gray-100 mt-2">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 block mb-1">Quantity</label>
+                        <div class="flex items-center gap-3">
+                            <input type="number" min="1" value="1" class="favor-qty w-20 p-2 rounded-lg border border-gray-300 text-sm text-center focus:border-[#a084ca] outline-none">
+                            <span class="text-xs text-gray-500 favor-line-total">1 × $${parseFloat(price).toFixed(2)} = <strong class="text-[#8f6bbf]">$${parseFloat(price).toFixed(2)}</strong></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 block mb-1">Customization Notes</label>
+                        <textarea class="favor-custom w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none resize-none" rows="2" placeholder="e.g. Name: Sofia, Special requests..."></textarea>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 block mb-1">Theme / Color</label>
+                        <input type="text" class="favor-theme w-full p-2 rounded-lg border border-gray-300 text-sm focus:border-[#a084ca] outline-none" placeholder="e.g. Safari, Pink & Gold">
+                    </div>
+                </div>
+            `;
+
+            const checkbox = card.querySelector(".favor-checkbox");
+            const checkboxUI = card.querySelector(".checkbox-ui");
+            const checkmarkEl = card.querySelector(".checkmark");
+            const details = card.querySelector(".favor-details");
+            const qtyInput = card.querySelector(".favor-qty");
+            const lineTotal = card.querySelector(".favor-line-total");
+            const priceLabel = card.querySelector(".favor-price-label");
+
+            checkbox.addEventListener("change", () => {
+                if (checkbox.checked) {
+                    card.classList.add("border-[#b39bc8]", "bg-[#f9f5fc]");
+                    checkboxUI.classList.add("bg-[#a084ca]", "border-[#a084ca]");
+                    checkmarkEl.classList.remove("opacity-0");
+                    details.classList.remove("hidden");
+                } else {
+                    card.classList.remove("border-[#b39bc8]", "bg-[#f9f5fc]");
+                    checkboxUI.classList.remove("bg-[#a084ca]", "border-[#a084ca]");
+                    checkmarkEl.classList.add("opacity-0");
+                    details.classList.add("hidden");
+                    qtyInput.value = 1;
+                    card.querySelector(".favor-custom").value = "";
+                    card.querySelector(".favor-theme").value = "";
+                    updateFavorLineTotal();
+                }
+            });
+
+            function updateFavorLineTotal() {
+                const qty = Math.max(1, parseInt(qtyInput.value) || 1);
+                const unitP = parseFloat(price);
+                const total = (qty * unitP).toFixed(2);
+                lineTotal.innerHTML = `${qty} × $${unitP.toFixed(2)} = <strong class="text-[#8f6bbf]">$${total}</strong>`;
+                priceLabel.textContent = `+$${total}`;
+            }
+
+            qtyInput.addEventListener("input", updateFavorLineTotal);
+
+            // Stop clicks inside details from toggling the checkbox
+            details.addEventListener("click", (e) => e.stopPropagation());
+            card.querySelector("label").addEventListener("click", (e) => {
+                if (e.target.closest(".favor-details")) e.preventDefault();
+            });
+
+            return card;
+        }
+
+        async function getQuote() {
+            const date = document.getElementById("event-date").value;
+            const time = document.getElementById("event-time").value; 
+            const address = document.getElementById("event-address").value;
+            const extraHours = parseInt(document.getElementById("extra-hours").value) || 0; 
+            
+            const selectedItems = Array.from(document.querySelectorAll('input[name="party-items"]:checked')).map(cb => {
+                const card = cb.closest(".item-card");
+                const item = {
+                    id: cb.value,
+                    child_name: (card.querySelector(".item-child-name") || {}).value ? card.querySelector(".item-child-name").value.trim() : "",
+                    child_age: (card.querySelector(".item-child-age") || {}).value ? card.querySelector(".item-child-age").value.trim() : "",
+                    theme: (card.querySelector(".item-theme") || {}).value ? card.querySelector(".item-theme").value.trim() : "",
+                    notes: (card.querySelector(".item-notes") || {}).value ? card.querySelector(".item-notes").value.trim() : ""
+                };
+                // BH- (Mini Bouncers): custom decals fields
+                const decalToggle = card.querySelector(".item-decal-toggle");
+                if (decalToggle) {
+                    item.custom_decals = decalToggle.checked;
+                    item.decal_theme = decalToggle.checked ? card.querySelector(".item-decal-theme").value.trim() : "";
+                    item.decal_name = decalToggle.checked ? card.querySelector(".item-decal-name").value.trim() : "";
+                }
+                // TS- (Tablescapes): num_kids and preferred_activity
+                const numKidsEl = card.querySelector(".item-num-kids");
+                if (numKidsEl) {
+                    item.num_kids = parseInt(numKidsEl.value) || 0;
+                    item.preferred_activity = (card.querySelector(".item-activity") || {}).value || "";
+                }
+                return item;
+            });
+            const selectedFavors = Array.from(document.querySelectorAll('input[name="favor-items"]:checked')).map(cb => {
+                const card = cb.closest(".favor-card");
+                return {
+                    id: cb.value,
+                    quantity: Math.max(1, parseInt(card.querySelector(".favor-qty").value) || 1),
+                    customization: card.querySelector(".favor-custom").value.trim(),
+                    theme: card.querySelector(".favor-theme").value.trim()
+                };
+            });
+
+            if (!date || !time || !address || (selectedItems.length === 0 && selectedFavors.length === 0)) {
+                showError("Please complete the Date, Time, Address, and select at least one item.");
+                return;
+            }
+
+            const btn = document.getElementById('btn-check-availability');
+            btn.innerText = "Checking Details...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(CLOUD_FN_URLS.CHECK_AVAILABILITY, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        date, time, address,
+                        extra_hours: extraHours,
+                        items: selectedItems,
+                        favors: selectedFavors
+                    }) 
+                });
+                const data = await res.json();
+                
+                if (!data.available) {
+                    document.getElementById("error-box").classList.remove("hidden");
+                    const conflictNames = (data.conflicts || []).map(id => PACKAGE_NAMES[id] || id);
+                    document.getElementById("error-box").innerText = "⚠️ Date Unavailable — these items are already booked:\n" + conflictNames.join(", ");
+                    document.getElementById("quote-result").classList.add("hidden");
+                } else {
+                    document.getElementById("error-box").classList.add("hidden");
+                    document.getElementById("quote-result").classList.remove("hidden");
+                    
+                    document.getElementById("q-sub").innerText = `$${data.quote.subtotal.toFixed(2)}`;
+                    
+                    const extraRow = document.getElementById("q-extra-row");
+                    if (data.quote.extra_time_cost > 0) {
+                        extraRow.classList.remove("hidden");
+                        extraRow.classList.add("flex");
+                        document.getElementById("q-extra").innerText = `+$${data.quote.extra_time_cost.toFixed(2)}`;
+                    } else {
+                        extraRow.classList.add("hidden");
+                        extraRow.classList.remove("flex");
+                    }
+
+                    document.getElementById("q-del").innerText = `$${data.quote.delivery.toFixed(2)}`;
+                    document.getElementById("q-tax").innerText = `$${data.quote.tax.toFixed(2)}`;
+                    document.getElementById("q-total").innerText = `$${data.quote.total.toFixed(2)}`;
+                    document.getElementById("q-dist").innerText = data.quote.distance_text || "";
+                    document.getElementById("quote-result").scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (e) {
+                showError("Server error connecting to quote engine.");
+            } finally {
+                btn.innerText = "Generate Quote & Check Date";
+                btn.disabled = false;
+            }
+        }
+
+        async function submitInquiry() {
+            const name = document.getElementById("cust-name").value;
+            const phone = document.getElementById("cust-phone").value;
+            const email = document.getElementById("cust-email").value;
+            const date = document.getElementById("event-date").value;
+            const time = document.getElementById("event-time").value; 
+            const address = document.getElementById("event-address").value;
+            const extraHours = parseInt(document.getElementById("extra-hours").value) || 0; 
+            
+            const selectedItems = Array.from(document.querySelectorAll('input[name="party-items"]:checked')).map(cb => {
+                const card = cb.closest(".item-card");
+                const item = {
+                    id: cb.value,
+                    child_name: (card.querySelector(".item-child-name") || {}).value ? card.querySelector(".item-child-name").value.trim() : "",
+                    child_age: (card.querySelector(".item-child-age") || {}).value ? card.querySelector(".item-child-age").value.trim() : "",
+                    theme: (card.querySelector(".item-theme") || {}).value ? card.querySelector(".item-theme").value.trim() : "",
+                    notes: (card.querySelector(".item-notes") || {}).value ? card.querySelector(".item-notes").value.trim() : ""
+                };
+                // BH- (Mini Bouncers): custom decals fields
+                const decalToggle = card.querySelector(".item-decal-toggle");
+                if (decalToggle) {
+                    item.custom_decals = decalToggle.checked;
+                    item.decal_theme = decalToggle.checked ? card.querySelector(".item-decal-theme").value.trim() : "";
+                    item.decal_name = decalToggle.checked ? card.querySelector(".item-decal-name").value.trim() : "";
+                }
+                // TS- (Tablescapes): num_kids and preferred_activity
+                const numKidsEl = card.querySelector(".item-num-kids");
+                if (numKidsEl) {
+                    item.num_kids = parseInt(numKidsEl.value) || 0;
+                    item.preferred_activity = (card.querySelector(".item-activity") || {}).value || "";
+                }
+                return item;
+            });
+            const selectedFavors = Array.from(document.querySelectorAll('input[name="favor-items"]:checked')).map(cb => {
+                const card = cb.closest(".favor-card");
+                return {
+                    id: cb.value,
+                    quantity: Math.max(1, parseInt(card.querySelector(".favor-qty").value) || 1),
+                    customization: card.querySelector(".favor-custom").value.trim(),
+                    theme: card.querySelector(".favor-theme").value.trim()
+                };
+            });
+
+            if (!name || !phone || !email) { showError("Complete contact details."); return; }
+
+            const btn = document.getElementById('btn-submit-inquiry');
+            btn.innerText = "Transmitting Inquiry...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(CLOUD_FN_URLS.SUBMIT_INQUIRY, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        date, time, address,
+                        extra_hours: extraHours,
+                        items: selectedItems,
+                        favors: selectedFavors,
+                        customer: { name, phone, email },
+                        venue_type: document.getElementById('venue-type').value,
+                        venue_details: getVenueDetails(),
+                        delivery_notes: document.getElementById('delivery-notes').value.trim()
+                    })
+                });
+                
+                if (res.status === 200) {
+                    document.getElementById("booking").classList.add("hidden");
+                    document.getElementById("inquiry-success").classList.remove("hidden");
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    showError("Error submitting inquiry. Please try again.");
+                    btn.innerText = "Submit Inquiry for Approval 🚀";
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                showError("Network error.");
+                btn.innerText = "Submit Inquiry for Approval 🚀";
+                btn.disabled = false;
+            }
+        }
+
+        // Venue type conditional fields
+        const venueMap = {
+            'Apartment / Condo': 'vc-apartment',
+            'Gated Community': 'vc-gated',
+            'Park / Outdoor Venue': 'vc-park',
+            'Event Hall / Indoor Venue': 'vc-hall'
+        };
+
+        function handleVenueChange() {
+            const venueType = document.getElementById('venue-type').value;
+            const container = document.getElementById('venue-conditional');
+            Object.values(venueMap).forEach(id => document.getElementById(id).classList.add('hidden'));
+
+            if (venueMap[venueType]) {
+                container.classList.remove('hidden');
+                document.getElementById(venueMap[venueType]).classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function getVenueDetails() {
+            const venueType = document.getElementById('venue-type').value;
+            const details = {};
+            if (venueType === 'Apartment / Condo') {
+                details.floor_unit = document.getElementById('vc-floor-unit').value.trim();
+                details.elevator = document.getElementById('vc-elevator').value;
+            } else if (venueType === 'Gated Community') {
+                details.gate_code = document.getElementById('vc-gate-code').value.trim();
+            } else if (venueType === 'Park / Outdoor Venue') {
+                details.shelter = document.getElementById('vc-shelter').value.trim();
+                details.electrical = document.getElementById('vc-electrical').value;
+            } else if (venueType === 'Event Hall / Indoor Venue') {
+                details.venue_name = document.getElementById('vc-venue-name').value.trim();
+                details.loading_dock = document.getElementById('vc-loading-dock').value;
+            }
+            return details;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initializeSystem();
+
+            // Dynamic hero for pre-selected packages
+            const selectParam = new URLSearchParams(window.location.search).get('select');
+            if (selectParam) {
+                const names = selectParam.split(',').map(id => PACKAGE_NAMES[id]).filter(Boolean);
+                if (names.length > 0) {
+                    document.getElementById('hero-default').classList.add('hidden');
+                    document.getElementById('hero-selected').classList.remove('hidden');
+                    document.getElementById('hero-package-name').textContent = names.join(' & ');
+                }
+            }
+
+            document.getElementById("btn-check-availability").addEventListener("click", getQuote);
+            document.getElementById("btn-submit-inquiry").addEventListener("click", submitInquiry);
+            document.getElementById("venue-type").addEventListener("change", handleVenueChange);
+        });
+    </script>
+
+    <footer class="py-10 text-center text-sm text-gray-400">
+        © 2026 Lola's Party • Licensed &amp; Insured
+    </footer>
+
+    <script src="navbar.js"></script>
+</body>
+</html>

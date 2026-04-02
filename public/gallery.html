@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lola's Party | Gallery</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+body { font-family: 'Poppins', sans-serif; }
+.script-font { font-family: 'Great Vibes', cursive; }
+
+/* Masonry columns */
+.masonry {
+  column-count: 1;
+  column-gap: 1.5rem;
+}
+@media (min-width: 640px)  { .masonry { column-count: 2; } }
+@media (min-width: 768px)  { .masonry { column-count: 3; } }
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.masonry-item:hover {
+  transform: scale(1.03);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* Tab scrollbar hide */
+.tabs-scroll::-webkit-scrollbar { display: none; }
+.tabs-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Lightbox transitions */
+.lightbox { transition: opacity 0.25s ease; }
+.lightbox img { transition: transform 0.25s ease; }
+</style>
+</head>
+
+<body class="bg-[#faf9f7] text-gray-700 font-[Poppins] flex flex-col min-h-screen">
+
+<div id="navbar-container"></div>
+
+<!-- HERO BANNER -->
+<header class="bg-[#f3eef7] py-24 text-center px-6">
+  <h2 class="script-font text-5xl text-[#b39bc8] mb-4">our gallery</h2>
+  <h1 class="text-3xl font-semibold text-gray-900">Browse Our Work</h1>
+  <p class="mt-4 text-gray-500 max-w-2xl mx-auto">
+    A look at the setups, decor, and details we bring to every celebration.
+  </p>
+</header>
+
+<!-- CATEGORY TABS -->
+<div class="sticky top-[100px] z-30 bg-[#faf9f7] border-b border-gray-100 shadow-sm">
+  <div class="max-w-6xl mx-auto px-4 py-4">
+    <div id="category-tabs" class="tabs-scroll flex gap-2 overflow-x-auto"></div>
+  </div>
+</div>
+
+<!-- PHOTO GRID -->
+<main id="main-content" class="flex-grow max-w-6xl mx-auto px-6 py-12 w-full">
+
+  <!-- Loading spinner -->
+  <div id="loading" class="flex flex-col items-center justify-center py-24">
+    <svg class="animate-spin h-10 w-10 text-[#a084ca]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+    </svg>
+    <p class="mt-4 text-gray-400 text-sm">Loading gallery...</p>
+  </div>
+
+  <!-- Empty state -->
+  <div id="empty-state" class="hidden text-center py-24">
+    <svg class="mx-auto h-16 w-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+    </svg>
+    <p class="text-gray-400 text-lg">No photos yet</p>
+    <p class="text-gray-400 text-sm mt-1">Check back soon!</p>
+  </div>
+
+  <!-- Gallery grid -->
+  <div id="gallery-grid" class="masonry hidden"></div>
+
+</main>
+
+<!-- LIGHTBOX OVERLAY -->
+<div id="lightbox" class="lightbox fixed inset-0 z-50 bg-black/90 hidden items-center justify-center" role="dialog" aria-modal="true">
+  <!-- Close button -->
+  <button id="lb-close" class="absolute top-4 right-4 text-white/80 hover:text-white transition-colors z-10" aria-label="Close">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+
+  <!-- Previous arrow -->
+  <button id="lb-prev" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors z-10" aria-label="Previous">
+    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+  </button>
+
+  <!-- Next arrow -->
+  <button id="lb-next" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors z-10" aria-label="Next">
+    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+  </button>
+
+  <!-- Image + caption container -->
+  <div class="flex flex-col items-center justify-center max-w-5xl max-h-[90vh] px-16">
+    <img id="lb-img" class="max-h-[80vh] max-w-full object-contain rounded-lg" src="" alt="" />
+    <p id="lb-caption" class="text-white/80 text-sm mt-4 text-center max-w-lg"></p>
+    <span id="lb-counter" class="text-white/50 text-xs mt-2"></span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-white py-10 text-center text-sm text-gray-400">&copy; 2026 Lola's Party &bull; Licensed &amp; Insured</footer>
+
+<!-- NAVBAR SCRIPT -->
+<script src="navbar.js"></script>
+
+<!-- SHARED MODULES -->
+<script src="utils.js"></script>
+<script src="firebase-init.js"></script>
+
+<!-- MAIN MODULE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// ─── Constants ───
+const CATEGORIES = [
+  { label: "All", slug: "all" },
+  { label: "Soft Play Setups", slug: "soft-play-setups" },
+  { label: "Cake Toppers", slug: "cake-toppers" },
+  { label: "Centerpieces & Decor", slug: "centerpieces-decor" },
+  { label: "Party Favors", slug: "party-favors" },
+  { label: "Welcome Signs", slug: "welcome-signs" },
+  { label: "Big Heads", slug: "big-heads" }
+];
+
+// ─── DOM refs ───
+const tabsContainer   = document.getElementById("category-tabs");
+const gridContainer   = document.getElementById("gallery-grid");
+const loadingEl       = document.getElementById("loading");
+const emptyEl         = document.getElementById("empty-state");
+const lightboxEl      = document.getElementById("lightbox");
+const lbImg           = document.getElementById("lb-img");
+const lbCaption       = document.getElementById("lb-caption");
+const lbClose         = document.getElementById("lb-close");
+const lbPrev          = document.getElementById("lb-prev");
+const lbNext          = document.getElementById("lb-next");
+
+let allPhotos      = [];   // full dataset from Firestore
+let filteredPhotos = [];   // current visible set
+let activeSlug     = "all";
+let lightboxIndex  = -1;
+
+// ─── Build category tabs (DOM API) ───
+CATEGORIES.forEach(cat => {
+  const btn = document.createElement("button");
+  btn.textContent = cat.label;
+  btn.dataset.slug = cat.slug;
+  btn.className = cat.slug === "all"
+    ? "px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors bg-[#a084ca] text-white"
+    : "px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors bg-white text-gray-600 hover:bg-[#f3eef7] border border-gray-200";
+  btn.addEventListener("click", () => selectCategory(cat.slug));
+  tabsContainer.appendChild(btn);
+});
+
+function selectCategory(slug) {
+  activeSlug = slug;
+  tabsContainer.querySelectorAll("button").forEach(btn => {
+    const isActive = btn.dataset.slug === slug;
+    btn.className = isActive
+      ? "px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors bg-[#a084ca] text-white"
+      : "px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors bg-white text-gray-600 hover:bg-[#f3eef7] border border-gray-200";
+  });
+  renderGrid();
+}
+
+// ─── Render the masonry grid (DOM API) ───
+function renderGrid() {
+  filteredPhotos = activeSlug === "all"
+    ? allPhotos
+    : allPhotos.filter(p => p.category === activeSlug);
+
+  // Clear previous items
+  while (gridContainer.firstChild) gridContainer.removeChild(gridContainer.firstChild);
+
+  if (filteredPhotos.length === 0 && allPhotos.length > 0) {
+    // Category has no photos but gallery isn't empty
+    const msg = document.createElement("p");
+    msg.textContent = "No photos in this category yet.";
+    msg.className = "text-gray-400 text-center col-span-full py-16";
+    gridContainer.appendChild(msg);
+    gridContainer.classList.remove("hidden");
+    return;
+  }
+
+  filteredPhotos.forEach((photo, idx) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "masonry-item rounded-xl overflow-hidden shadow-md cursor-pointer bg-white";
+
+    const img = document.createElement("img");
+    img.src = photo.photo_url;
+    img.alt = photo.caption || "Gallery photo";
+    img.className = "w-full block";
+    img.loading = "lazy";
+    wrapper.appendChild(img);
+
+    if (photo.caption) {
+      const cap = document.createElement("p");
+      cap.textContent = photo.caption;
+      cap.className = "px-4 py-3 text-sm text-gray-500";
+      wrapper.appendChild(cap);
+    }
+
+    wrapper.addEventListener("click", () => openLightbox(idx));
+    gridContainer.appendChild(wrapper);
+  });
+
+  gridContainer.classList.remove("hidden");
+}
+
+// ─── Lightbox ───
+function openLightbox(idx) {
+  lightboxIndex = idx;
+  updateLightboxContent();
+  lightboxEl.classList.remove("hidden");
+  lightboxEl.classList.add("flex");
+  document.body.style.overflow = "hidden";
+}
+
+function closeLightbox() {
+  lightboxEl.classList.add("hidden");
+  lightboxEl.classList.remove("flex");
+  document.body.style.overflow = "";
+  lightboxIndex = -1;
+}
+
+function updateLightboxContent() {
+  const photo = filteredPhotos[lightboxIndex];
+  if (!photo) return;
+  lbImg.src = photo.photo_url;
+  lbImg.alt = photo.caption || "Gallery photo";
+  lbCaption.textContent = photo.caption || "";
+  document.getElementById('lb-counter').textContent = `${lightboxIndex + 1} / ${filteredPhotos.length}`;
+
+  lbPrev.style.display = lightboxIndex > 0 ? "" : "none";
+  lbNext.style.display = lightboxIndex < filteredPhotos.length - 1 ? "" : "none";
+}
+
+function prevPhoto() {
+  if (lightboxIndex > 0) { lightboxIndex--; updateLightboxContent(); }
+}
+
+function nextPhoto() {
+  if (lightboxIndex < filteredPhotos.length - 1) { lightboxIndex++; updateLightboxContent(); }
+}
+
+lbClose.addEventListener("click", closeLightbox);
+lbPrev.addEventListener("click", prevPhoto);
+lbNext.addEventListener("click", nextPhoto);
+
+// Close on backdrop click
+lightboxEl.addEventListener("click", (e) => {
+  if (e.target === lightboxEl) closeLightbox();
+});
+
+// Keyboard navigation
+document.addEventListener("keydown", (e) => {
+  if (lightboxIndex < 0) return;
+  if (e.key === "Escape") closeLightbox();
+  if (e.key === "ArrowLeft") prevPhoto();
+  if (e.key === "ArrowRight") nextPhoto();
+});
+
+// ─── Fetch data ───
+async function init() {
+  try {
+    const { db } = await window.initFirebase({ initializeApp, getFirestore });
+
+    // 3. Query gallery collection ordered by `order`
+    const q    = query(collection(db, "gallery"), orderBy("order", "asc"));
+    const snap = await getDocs(q);
+
+    allPhotos = snap.docs.map(doc => {
+      const d = doc.data();
+      return {
+        category:  d.category  || "",
+        caption:   d.caption   || "",
+        photo_url: d.photo_url || "",
+        order:     d.order     || 0
+      };
+    });
+
+    // 4. Hide loading, show content
+    loadingEl.classList.add("hidden");
+
+    if (allPhotos.length === 0) {
+      emptyEl.classList.remove("hidden");
+    } else {
+      renderGrid();
+    }
+  } catch (err) {
+    console.error("Gallery load error:", err);
+    loadingEl.classList.add("hidden");
+    emptyEl.classList.remove("hidden");
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>

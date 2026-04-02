@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lola's Party | About Us</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body { font-family: 'Poppins', sans-serif; }
+.script-font { font-family: 'Great Vibes', cursive; }
+
+.image-card {
+  transition: all 0.4s ease;
+}
+
+.image-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+</style>
+</head>
+
+<body class="bg-[#faf9f7] text-gray-700 flex flex-col min-h-screen">
+
+<div id="navbar-container"></div>
+
+<!-- HERO HEADER -->
+<header class="bg-[#f3eef7] py-24 text-center px-6">
+  <h2 class="script-font text-4xl text-[#b39bc8] mb-4">
+    our story
+  </h2>
+  <h1 class="text-4xl font-semibold text-gray-900">
+    Meet the Face Behind Lola's
+  </h1>
+  <p class="mt-6 text-gray-500 max-w-2xl mx-auto">
+    A mother, a therapist, and a creator — dedicated to making your little one's big day truly unforgettable.
+  </p>
+</header>
+
+<!-- CONTENT -->
+<main id="main-content" class="flex-grow max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-16 items-center">
+
+  <!-- TEXT SIDE -->
+  <div>
+    <h2 class="text-2xl font-semibold text-gray-900 mb-6">
+      Hi, I'm Nora Cortes
+    </h2>
+
+    <p class="text-gray-600 mb-6 leading-relaxed">
+      I am the face behind Lola's Party — and a mother of two beautiful children, both of whom motivated me to start this business. Before exploring entrepreneurship, I was a Registered Behavioral Therapist for children. I always found joy in working with kids, even before having my own. So when I say I know kids, I mean it!
+    </p>
+
+    <p class="text-gray-600 mb-6 leading-relaxed">
+      Creating beautiful things and lasting memories are what I strive for. I take pride in providing a safe and clean environment for kids to be kids and thrive.
+    </p>
+
+    <p class="text-gray-600 mb-4 leading-relaxed italic">
+      Thank you for finding us and entrusting us to bring the fun to your little one's big day. We can't wait to connect with you!
+    </p>
+    <p class="script-font text-2xl text-[#b39bc8] mb-10">Nora Cortes</p>
+
+    <!-- TRUST BADGES -->
+    <div class="space-y-5">
+
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-[#e9f7ef] flex items-center justify-center text-green-600">
+          <i class="fas fa-shield-halved"></i>
+        </div>
+        <span class="font-medium text-gray-800">Licensed &amp; Insured</span>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-[#e8f1fb] flex items-center justify-center text-blue-500">
+          <i class="fas fa-spray-can-sparkles"></i>
+        </div>
+        <span class="font-medium text-gray-800">Professional Sanitization After Every Event</span>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-[#f6f2fb] flex items-center justify-center text-[#a084ca]">
+          <i class="fas fa-heart"></i>
+        </div>
+        <span class="font-medium text-gray-800">Family-Owned &amp; Operated</span>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-[#fef3f2] flex items-center justify-center text-rose-400">
+          <i class="fas fa-child-reaching"></i>
+        </div>
+        <span class="font-medium text-gray-800">Former Registered Behavioral Therapist</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- IMAGE SIDE -->
+  <div class="relative image-card">
+    <div class="absolute -inset-6 bg-[#f3eef7] rounded-[40px]"></div>
+
+    <img
+      src="https://firebasestorage.googleapis.com/v0/b/<FIREBASE_STORAGE_BUCKET>/o/about%2Fabout-us.png?alt=media"
+      alt="Nora Cortes, founder of Lola's Party"
+      class="relative rounded-[40px] shadow-lg w-full h-[480px] object-cover object-top"
+    >
+  </div>
+
+</main>
+
+<!-- CTA SECTION -->
+<section class="bg-white py-20 text-center">
+  <h3 class="text-2xl font-semibold text-gray-900 mb-3">
+    Ready to Create Something Special?
+  </h3>
+  <p class="text-gray-500 mb-8">Let's bring the magic to your little one's big day.</p>
+
+  <a href="mailto:your-business-email@example.com"
+     class="inline-flex items-center gap-2 bg-[#a084ca] text-white px-10 py-4 rounded-full hover:bg-[#8f6bbf] transition shadow-md font-medium">
+    <i class="fas fa-envelope"></i> Contact Us
+  </a>
+  <p class="text-sm text-gray-400 mt-3">Or email us directly at <span class="text-gray-600 font-medium">your-business-email@example.com</span></p>
+
+  <p class="mt-8 text-sm text-gray-400">
+    Have questions first?
+    <a href="faq.html" class="text-[#a084ca] hover:underline font-medium">Check our FAQ</a>
+  </p>
+</section>
+
+<footer class="py-10 text-center text-sm text-gray-400">
+  © 2026 Lola's Party • Licensed &amp; Insured
+</footer>
+
+<script src="navbar.js"></script>
+
+</body>
+</html>

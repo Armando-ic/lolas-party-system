@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration Dashboard</title>
+    <script>
+        const savedTheme = localStorage.getItem("adminTheme") || "light";
+        if (savedTheme === "light") document.documentElement.classList.add("light");
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .selected-card { border-left: 4px solid #06b6d4; background-color: rgba(6, 182, 212, 0.1); }
+
+        /* 🌸 Light Theme Overrides - "Rosewater Solid Edition v2" 🌸 */
+        html.light { background: #E6D0D3; color: #2C1E1F; } 
+        html.light ::-webkit-scrollbar-track { background: #E6D0D3; } 
+        html.light ::-webkit-scrollbar-thumb { background: #B84A5B; border-radius: 4px; } 
+        html.light ::-webkit-scrollbar-thumb:hover { background: #7A2E39; } 
+        html.light .bg-gray-900 { background-color: #E6D0D3 !important; } 
+        html.light input.bg-gray-900, html.light textarea.bg-gray-900, html.light select.bg-gray-900 { background-color: #FFFFFF !important; color: #000000 !important; border-color: #D6C3C5 !important; } 
+        html.light .bg-gray-800 { background-color: #FCF4F5 !important; } 
+        html.light .bg-gray-700 { background-color: #FAE1E3 !important; } 
+        html.light .bg-gray-800\/50 { background-color: #FCF4F5 !important; } 
+        html.light .bg-gray-700\/50 { background-color: #FAE1E3 !important; }
+        html.light .border-gray-700 { border-color: #DDA8AD !important; } 
+        html.light .border-gray-600 { border-color: #D6C3C5 !important; } 
+        html.light .text-gray-100, html.light .text-white { color: #2C1E1F !important; } 
+        html.light .text-gray-400 { color: #634E50 !important; } 
+        html.light .text-gray-300 { color: #4A383A !important; }
+        html.light .text-gray-500, html.light .text-gray-600 { color: #634E50 !important; } 
+        html.light .text-cyan-500, html.light .text-cyan-400 { color: #B84A5B !important; } 
+        html.light .bg-cyan-500 { background-color: #B84A5B !important; color: white !important; } 
+        html.light .hover\:bg-cyan-400:hover { background-color: #9E3B4A !important; } 
+        html.light .stat-text { color: #000000 !important; font-weight: bold !important; } 
+        html.light .date-filter-label { color: #7A2E39 !important; font-weight: bold !important; } 
+        html.light .text-green-400 { color: #166534 !important; font-weight: bold !important; } 
+        html.light .text-blue-400 { color: #1E3A8A !important; font-weight: bold !important; } 
+        html.light .text-red-400 { color: #991B1B !important; font-weight: bold !important; } 
+        html.light #btn-maps { background-color: #4285F4 !important; color: white !important; border: none !important; }
+        html.light #btn-maps:hover { background-color: #3367D6 !important; }
+
+        html.light .selected-card { background-color: #B84A5B !important; border-left-color: #7A2E39 !important; }
+        html.light .selected-card .text-white { color: #FFFFFF !important; }
+        html.light .selected-card .text-gray-400 { color: #FEE2E2 !important; } 
+        
+        html.light .selected-card span.pending-badge { background-color: #FEF3C7 !important; border-color: #92400E !important; color: #000000 !important; }
+        html.light .selected-card span.pending-deposit-badge { background-color: #F3E8FF !important; border-color: #6B21A8 !important; color: #000000 !important; }
+        html.light .selected-card span.approved-badge { background-color: #DCFCE7 !important; border-color: #166534 !important; color: #000000 !important; }
+        html.light .selected-card span.completed-badge { background-color: #DBEAFE !important; border-color: #1E3A8A !important; color: #000000 !important; }
+        html.light .selected-card span.denied-badge { background-color: #FEE2E2 !important; border-color: #991B1B !important; color: #000000 !important; }
+
+        html.light .fc-theme-standard td, html.light .fc-theme-standard th, html.light .fc-scrollgrid { border-color: #DDA8AD !important; }
+        html.light .fc-event-main { color: #000000 !important; font-weight: bold !important; } 
+        html.light .fc .fc-button-primary { background-color: #B84A5B !important; border-color: #B84A5B !important; color: white !important; font-weight: bold !important; } 
+        html.light .fc .fc-button-primary:hover { background-color: #9E3B4A !important; }
+        html.light .fc .fc-button-active { background-color: #7A2E39 !important; border-color: #7A2E39 !important; }
+
+        /* PAYMENT STATUS BADGE STYLES */
+        .pay-badge-paid { background-color: rgba(34, 197, 94, 0.15) !important; border-color: #22c55e !important; color: #4ade80 !important; }
+        .pay-badge-deposit { background-color: rgba(249, 115, 22, 0.15) !important; border-color: #f97316 !important; color: #fb923c !important; }
+        .pay-badge-unpaid { background-color: rgba(239, 68, 68, 0.15) !important; border-color: #ef4444 !important; color: #f87171 !important; }
+        
+        html.light .pay-badge-paid { background-color: #dcfce7 !important; color: #166534 !important; }
+        html.light .pay-badge-deposit { background-color: #ffedd5 !important; color: #c2410c !important; }
+        html.light .pay-badge-unpaid { background-color: #fee2e2 !important; color: #991b1b !important; }
+
+        /* ── Light theme contrast fixes ── */
+        /* Pending Approval: yellow-400 (#facc15) is invisible on light bg → dark amber */
+        html.light .text-yellow-400 { color: #92400E !important; font-weight: bold !important; }
+        /* Pending Deposit: purple-400 (#c084fc) is near-invisible on light bg → dark purple */
+        html.light .text-purple-400 { color: #5B21B6 !important; font-weight: bold !important; }
+        /* Status badge chips: bg-gray-900 → same as page bg; make them white so the chip is visible */
+        html.light span.bg-gray-900 { background-color: #FFFFFF !important; }
+        /* text-red-500 (logout, delete btn, modal title) had no override — match text-red-400 */
+        html.light .text-red-500 { color: #991B1B !important; }
+        /* Extra hours banner: dark purple bg tint looks wrong on light theme → soft lavender */
+        html.light .bg-purple-900\/20 { background-color: #EDE9FE !important; }
+        /* Custom decals badge: purple tint on light theme → soft lavender */
+        html.light .bg-purple-500\/15 { background-color: #EDE9FE !important; }
+        html.light .border-purple-500\/30 { border-color: #7C3AED !important; }
+
+        /* ── E-commerce order detail card fixes ── */
+        /* Item name text-gray-200 (#e5e7eb near-white) → dark */
+        html.light .text-gray-200 { color: #2C1E1F !important; }
+        /* Exact text content text-yellow-300 (#fde047 bright yellow) → dark amber */
+        html.light .text-yellow-300 { color: #78350F !important; }
+        /* Exact text label text-yellow-500 (#eab308) → dark amber for consistency */
+        html.light .text-yellow-500 { color: #92400E !important; }
+        /* bg-gray-700/40 (event header strip) — opacity variant not covered by .bg-gray-700 override → stays dark */
+        html.light .bg-gray-700\/40 { background-color: #FAE1E3 !important; }
+        /* bg-gray-700/50 (item cards, softplay pills, theme btn) — same issue */
+        html.light .bg-gray-700\/50 { background-color: #FAE1E3 !important; }
+        /* Exact text highlight box — faint yellow on pink → visible soft yellow */
+        html.light .bg-yellow-500\/10 { background-color: #FEF9C3 !important; }
+        /* Exact text box border — faint yellow disappears → visible amber */
+        html.light .border-yellow-500\/30 { border-color: #D97706 !important; }
+
+        @media (max-width: 768px) {
+            .fc .fc-toolbar.fc-header-toolbar { flex-direction: column; gap: 12px; }
+            .fc .fc-toolbar-chunk:nth-child(2) { order: 1; width: 100%; text-align: center; }
+            .fc .fc-toolbar-title { font-size: 1.25rem !important; }
+            .fc .fc-toolbar-chunk:nth-child(1) { order: 2; display: flex; gap: 12px; justify-content: center; width: 100%; }
+            .fc .fc-toolbar-chunk:nth-child(3) { order: 3; display: flex; justify-content: center; width: 100%; }
+        }
+        
+        .pac-container { background-color: #1f2937 !important; border: 1px solid #374151 !important; border-radius: 0.5rem; font-family: inherit; z-index: 100000; }
+        .pac-item { border-top: 1px solid #374151 !important; color: #d1d5db !important; padding: 10px; cursor: pointer; }
+        .pac-item:hover { background-color: #374151 !important; }
+        .pac-item-query { color: #fff !important; font-weight: bold; }
+        html.light .pac-container { background-color: #fff !important; border-color: #D6C3C5 !important; }
+        html.light .pac-item { border-top-color: #FAE1E3 !important; color: #4A383A !important; }
+        html.light .pac-item:hover { background-color: #FAE1E3 !important; }
+        html.light .pac-item-query { color: #000 !important; }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-gray-100 font-sans antialiased h-screen flex flex-col overflow-hidden">
+    
+    <div id="login-screen" class="fixed inset-0 z-50 bg-gray-900 flex items-center justify-center fade-in">
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700 w-full max-w-md text-center">
+            <div class="w-16 h-16 bg-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-cyan-500/50">
+                <i class="fas fa-fingerprint text-gray-900 text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">Admin Sign In</h2>
+            <p class="text-gray-400 mb-6 text-sm">Enter your credentials to access the dashboard.</p>
+            <input type="email" id="email" placeholder="Admin Email" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 mb-3 text-white focus:border-cyan-500 focus:outline-none transition-colors">
+            <input type="password" id="password" placeholder="Password" onkeydown="if(event.key==='Enter') login()" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 mb-6 text-white focus:border-cyan-500 focus:outline-none transition-colors">
+            <button onclick="login()" class="w-full bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold py-4 rounded-lg transition-all transform active:scale-95">Sign In</button>
+            <div id="login-error-banner" class="hidden mt-4 bg-red-500/20 border border-red-500/40 text-red-400 p-4 rounded-lg text-sm text-center">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <span id="login-error-text">Could not connect to server. Please try again later.</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="payment-modal" class="fixed inset-0 z-[60] bg-black bg-opacity-60 hidden items-center justify-center p-4 fade-in">
+        <div class="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-gray-700 bg-gray-800/50">
+                <h2 class="text-2xl font-bold text-white"><i class="fas fa-file-invoice-dollar text-cyan-500 mr-2"></i> Select Billing Method</h2>
+                <p class="text-gray-400 text-sm mt-1">How would you like to bill this customer?</p>
+            </div>
+            <div class="p-6 space-y-4">
+                
+                <div id="extra-hours-approval-section" class="mb-4 hidden p-4 bg-gray-900 border border-gray-700 rounded-xl">
+                    <label class="block text-sm font-bold text-gray-300 mb-2">Confirm Additional Time ($30/hr):</label>
+                    <select id="approve-extra-hours" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none mb-2">
+                        <option value="0">0 Hours (Standard 3-Hr Rental)</option>
+                        <option value="1">1 Hour</option>
+                        <option value="2">2 Hours</option>
+                        <option value="3">3 Hours</option>
+                    </select>
+                    <p class="text-xs text-gray-400">Customer requested: <span id="requested-extra-hours-display" class="font-bold text-cyan-400">0</span> hours.</p>
+                </div>
+
+                <button onclick="confirmBilling('deposit')" class="w-full bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-xl transition-colors font-bold text-lg shadow-sm border border-gray-600 flex items-center justify-center gap-2">
+                    Send $100 Security Deposit Link
+                </button>
+                <button onclick="confirmBilling('full')" class="w-full bg-cyan-500 hover:bg-cyan-400 text-gray-900 py-4 rounded-xl transition-all font-bold text-lg shadow-sm flex items-center justify-center gap-2 transform active:scale-95">
+                    Send 100% Full Payment Link
+                </button>
+            </div>
+            <div class="p-4 border-t border-gray-700 text-center bg-gray-800/50">
+                <button onclick="cancelBilling()" class="text-gray-400 hover:text-white font-medium text-sm transition-colors uppercase tracking-wider">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="rejection-modal" class="fixed inset-0 z-[60] bg-black bg-opacity-60 hidden items-center justify-center p-4 fade-in">
+        <div class="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-gray-700 bg-gray-800/50">
+                <h2 class="text-2xl font-bold text-red-500"><i class="fas fa-ban mr-2"></i> Deny Order</h2>
+                <p class="text-gray-400 text-sm mt-1">This will email the customer and clear your calendar.</p>
+            </div>
+            <div class="p-6">
+                <label class="block text-sm font-bold text-gray-300 mb-2">Reason for Denial:</label>
+                <textarea id="rejection-reason" rows="3" placeholder="e.g., We are fully booked for this date and time." class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-red-500 outline-none resize-none"></textarea>
+            </div>
+            <div class="p-4 border-t border-gray-700 bg-gray-800/50 flex gap-3">
+                <button onclick="cancelRejection()" class="flex-1 text-gray-400 hover:text-white font-bold py-3 rounded-xl transition-colors bg-gray-700 border border-gray-600">Cancel</button>
+                <button onclick="confirmRejection()" id="btn-confirm-reject" class="flex-1 bg-red-500 hover:bg-red-400 text-white font-bold py-3 rounded-xl transition-colors shadow-lg flex items-center justify-center gap-2">
+                    Send Denial Email <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="conflict-modal" class="fixed inset-0 z-[60] bg-black bg-opacity-60 hidden items-center justify-center p-4 fade-in">
+        <div class="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-gray-700 bg-gray-800/50">
+                <h2 class="text-2xl font-bold text-yellow-500"><i class="fas fa-exclamation-triangle mr-2"></i> Double-Booking Detected</h2>
+                <p class="text-gray-400 text-sm mt-1">One or more items in this manual order are already reserved for this date.</p>
+            </div>
+            <div class="p-6">
+                <label class="block text-sm font-bold text-gray-300 mb-2">Conflicting Assets:</label>
+                <div id="conflict-items-list" class="bg-gray-900 border border-gray-700 p-4 rounded-lg text-sm text-red-400 font-mono space-y-1">
+                    </div>
+            </div>
+            <div class="p-4 border-t border-gray-700 bg-gray-800/50 flex flex-col gap-3">
+                <button onclick="confirmManualOrder(true)" id="btn-force-override" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg flex items-center justify-center gap-2">
+                    Force Override & Create Anyway <i class="fas fa-bolt"></i>
+                </button>
+                <button onclick="closeConflictModal()" class="w-full text-gray-400 hover:text-white font-bold py-3 rounded-xl transition-colors bg-gray-700 border border-gray-600">Cancel Order Creation</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="delete-confirm-modal" class="fixed inset-0 z-[60] bg-black bg-opacity-60 hidden items-center justify-center p-4 fade-in">
+        <div class="bg-gray-800 rounded-2xl border border-red-500/40 w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-gray-700 bg-gray-800/50">
+                <h2 class="text-xl font-bold text-red-400"><i class="fas fa-trash-alt mr-2"></i> Delete Order?</h2>
+                <p class="text-gray-400 text-sm mt-1">This will permanently remove this order from the database.</p>
+            </div>
+            <div class="p-6 bg-red-500/5">
+                <p class="text-sm text-gray-300">Order: <span id="delete-confirm-label" class="font-bold text-white"></span></p>
+                <p class="text-xs text-red-400 mt-2 font-bold uppercase tracking-wide">This action cannot be undone.</p>
+            </div>
+            <div class="p-4 border-t border-gray-700 bg-gray-800/50 flex gap-3">
+                <button onclick="document.getElementById('delete-confirm-modal').classList.add('hidden');document.getElementById('delete-confirm-modal').classList.remove('flex')" class="flex-1 text-gray-400 hover:text-white font-bold py-3 rounded-xl transition-colors bg-gray-700 border border-gray-600">Cancel</button>
+                <button onclick="confirmDeleteOrder()" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg flex items-center justify-center gap-2">
+                    Delete <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gallery-delete-modal" class="fixed inset-0 z-[60] bg-black bg-opacity-60 hidden items-center justify-center p-4 fade-in">
+        <div class="bg-gray-800 rounded-2xl border border-red-500/40 w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-gray-700 bg-gray-800/50">
+                <h2 class="text-xl font-bold text-red-400"><i class="fas fa-trash-alt mr-2"></i> Delete Photo?</h2>
+                <p class="text-gray-400 text-sm mt-1">This will permanently remove this photo from the gallery.</p>
+            </div>
+            <div class="p-6 bg-red-500/5">
+                <p class="text-sm text-gray-300">Photo: <span id="gallery-delete-label" class="font-bold text-white"></span></p>
+                <p class="text-xs text-red-400 mt-2 font-bold uppercase tracking-wide">This action cannot be undone.</p>
+            </div>
+            <div class="p-4 border-t border-gray-700 bg-gray-800/50 flex gap-3">
+                <button onclick="document.getElementById('gallery-delete-modal').classList.add('hidden');document.getElementById('gallery-delete-modal').classList.remove('flex');window._pendingGalleryDeleteDocId=null;window._pendingGalleryDeleteStoragePath=null;" class="flex-1 text-gray-400 hover:text-white font-bold py-3 rounded-xl transition-colors bg-gray-700 border border-gray-600">Cancel</button>
+                <button onclick="confirmGalleryDelete()" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg flex items-center justify-center gap-2">
+                    Delete <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-screen" class="hidden flex-1 flex flex-col h-full relative pb-16 md:pb-0">
+        <header class="h-16 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-6 flex-shrink-0">
+            <div class="flex items-center">
+                <nav class="hidden md:flex space-x-1 bg-gray-900 p-1 rounded-lg">
+                    <button onclick="switchView('missions')" id="btn-tab-missions" class="px-4 py-1.5 rounded-md text-sm font-medium bg-gray-700 text-white shadow transition-all">Orders</button>
+                    <button onclick="switchView('calendar')" id="btn-tab-calendar" class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition-all">Calendar</button>
+                    <button onclick="switchView('inventory')" id="btn-tab-inventory" class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition-all">Inventory</button>
+                    <button onclick="switchView('create')" id="btn-tab-create" class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition-all"><i class="fas fa-plus mr-1"></i> Create Order</button>
+                    <button onclick="switchView('gallery')" id="btn-tab-gallery" class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition-all"><i class="fas fa-images mr-1"></i> Gallery</button>
+                </nav>
+            </div>
+
+            <div class="flex items-center gap-2 md:gap-4">
+                <a id="ledger-link" href="#" target="_blank" rel="noopener noreferrer" class="bg-green-600/20 hover:bg-green-600/40 text-green-400 p-3 rounded-lg transition-colors text-sm flex items-center gap-2" title="Open Master Ledger">
+                    <i class="fas fa-file-excel"></i><span class="hidden md:inline font-bold">Ledger</span>
+                </a>
+                
+                <div class="text-right hidden sm:block">
+                    <div class="text-sm font-bold text-white mt-1" id="user-email-display">Admin</div>
+                </div>
+                <button id="themeToggle" class="bg-gray-700/50 hover:bg-gray-700 text-gray-200 p-3 rounded-lg transition-colors text-sm flex items-center gap-2">
+                    <i id="themeIcon" class="fas fa-moon"></i><span class="hidden md:inline" id="themeText">Light</span>
+                </button>
+                <button onclick="logout()" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 p-3 rounded-lg transition-colors"><i class="fas fa-power-off"></i></button>
+            </div>
+        </header>
+
+        <div id="view-missions" class="flex-1 flex overflow-hidden relative">
+            <div class="w-full md:w-1/3 border-r border-gray-700 flex flex-col bg-gray-900">
+                
+                <div class="p-4 border-b border-gray-700 bg-gray-800/50 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs text-cyan-400 font-bold uppercase tracking-wider date-filter-label"><i class="fas fa-filter mr-1"></i> Filters</label>
+                        <div class="flex items-center gap-3">
+                            <button onclick="loadBookings()" class="text-gray-400 hover:text-white text-xs uppercase tracking-wider font-bold transition-colors" title="Refresh bookings from server"><i class="fas fa-sync-alt"></i> Refresh</button>
+                            <button onclick="clearAllFilters()" class="text-gray-400 hover:text-white text-xs uppercase tracking-wider font-bold transition-colors"><i class="fas fa-undo"></i> Reset</button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <input type="text" id="order-id-filter" oninput="applyFilters()" placeholder="Search by Order ID..." class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none placeholder-gray-500">
+
+                        <input type="date" id="date-filter" onchange="applyFilters()" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none">
+
+                        <select id="status-filter" onchange="applyFilters()" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none">
+                            <option value="">All Order Statuses</option>
+                            <option value="Pending Approval">Pending Approval</option>
+                            <option value="Pending Deposit">Pending Deposit</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Denied">Denied</option>
+                        </select>
+                        
+                        <select id="payment-filter" onchange="applyFilters()" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none">
+                            <option value="">All Payment Statuses</option>
+                            <option value="Unpaid">Unpaid</option>
+                            <option value="Security Deposit Paid">Security Deposit Paid</option>
+                            <option value="Paid in Full">Paid in Full</option>
+                        </select>
+                    </div>
+
+                    <div class="mt-2 flex justify-between items-center text-sm">
+                        <span class="stat-text">Matches: <span id="stat-count">0</span></span>
+                        <button id="sort-toggle-btn" onclick="toggleSort()" class="text-gray-400 hover:text-white text-xs uppercase tracking-wider font-bold transition-colors flex items-center gap-1" title="Sort orders">
+                            <i class="fas fa-sort-amount-down"></i> <span id="sort-label">Oldest</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="bookings-list" class="flex-1 overflow-y-auto p-2 space-y-2"></div>
+            </div>
+
+            <div id="detail-pane-container" class="absolute inset-0 z-40 bg-gray-900 flex flex-col transform translate-x-full transition-transform duration-300 md:relative md:translate-x-0 md:w-2/3 w-full">
+                
+                <div class="md:hidden bg-gray-800 border-b border-gray-700 p-2 flex items-center shadow-sm relative z-20">
+                    <button onclick="closeMobileDetail()" class="text-cyan-500 hover:text-cyan-400 font-bold flex items-center gap-2 text-xs uppercase tracking-wider transition-colors w-full p-4 text-left">
+                        <i class="fas fa-chevron-left text-lg"></i> Back to Orders
+                    </button>
+                </div>
+
+                <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none"><i class="fas fa-rocket text-9xl text-cyan-500"></i></div>
+
+                <div id="detail-panel" class="relative z-10 flex-1 p-6 md:p-8 pb-24 md:pb-8 overflow-y-auto hidden">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-8 gap-4 md:gap-0">
+                        <div>
+                            <div class="text-cyan-500 font-mono text-sm mb-1" id="detail-id">ID: #---</div>
+                            <h1 class="text-2xl md:text-3xl font-bold text-white leading-tight" id="detail-customer">Select an Order</h1>
+                            
+                            <div class="flex items-center gap-3 mt-2 text-gray-400">
+                                <span><i class="fas fa-calendar-alt"></i> <span id="detail-date">---</span></span>
+                                <span class="text-gray-600">|</span>
+                                <span><i class="fas fa-clock"></i> <span id="detail-time">---</span></span>
+                                <span id="pickup-badge" class="hidden items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold">
+                                    <i class="fas fa-box-open text-xs"></i> Pickup
+                                </span>
+                            </div>
+                        </div>
+                        <div class="relative min-w-[220px] w-full md:w-auto">
+                            <select id="detail-status" onchange="updateBookingStatus(this.value)" class="w-full appearance-none bg-gray-800 border border-gray-600 text-white py-3 pl-4 pr-10 rounded-xl focus:outline-none focus:border-cyan-500 font-bold uppercase text-xs tracking-wider shadow-sm cursor-pointer disabled:opacity-50">
+                                <option value="Pending Approval">Pending Approval</option>
+                                <option value="Pending Deposit" disabled>Pending Deposit (Auto-Managed)</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Completed" disabled>Completed (Auto-Managed)</option>
+                                <option value="Denied">Denied</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div id="target-location-card" class="bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-lg">
+                            <h3 id="target-location-title" class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-4"><i class="fas fa-map-marker-alt mr-2"></i> Target Location</h3>
+                            <p class="text-lg text-white font-medium leading-relaxed mb-4" id="detail-address">---</p>
+                            <a id="btn-maps" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl transition-colors font-medium text-sm gap-2 shadow-sm">
+                                <i class="fas fa-location-arrow"></i> Open Navigation
+                            </a>
+                        </div>
+
+                        <div id="contact-card" class="bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-lg">
+                            <h3 class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-4"><i class="fas fa-user-astronaut mr-2"></i> Client Contact Information</h3>
+                            <div class="space-y-3">
+                                <a id="btn-phone" href="#" class="relative flex items-center p-4 bg-gray-700 rounded-xl hover:bg-gray-600 transition-colors group shadow-sm">
+                                    <span class="text-gray-300 group-hover:text-white absolute left-4"><i class="fas fa-phone mr-2 text-cyan-500"></i> Call</span>
+                                    <span class="font-mono text-sm text-gray-400 w-full text-center" id="detail-phone">---</span>
+                                </a>
+                                <a id="btn-email" href="#" class="relative flex items-center p-4 bg-gray-700 rounded-xl hover:bg-gray-600 transition-colors group shadow-sm">
+                                    <span class="text-gray-300 group-hover:text-white absolute left-4"><i class="fas fa-envelope mr-2 text-cyan-500"></i> Email</span>
+                                    <span class="font-mono text-sm text-gray-400 w-full text-center truncate px-20" id="detail-email">---</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div id="venue-delivery-card" class="hidden bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-lg col-span-1 lg:col-span-2">
+                            <h3 class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-4"><i class="fas fa-truck mr-2"></i> Venue & Delivery Details</h3>
+                            <div id="venue-delivery-content" class="space-y-3"></div>
+                        </div>
+
+                        <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-lg col-span-1 lg:col-span-2">
+                            <h3 class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-4"><i class="fas fa-box-open mr-2"></i> Order Summary</h3>
+                            <div id="detail-items" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                            
+                            <div class="mt-6 pt-4 border-t border-gray-700 flex justify-between items-center">
+                                <span class="text-gray-400 text-sm">Total Contract Value</span>
+                                <div class="text-right">
+                                    <div class="text-2xl font-bold text-green-400 font-mono" id="detail-total">$---</div>
+                                    <div class="text-[10px] text-cyan-500 uppercase tracking-wider font-bold mt-1" id="detail-payment-status">Unpaid</div>
+                                </div>
+                            </div>
+                            
+                            <div id="final-balance-container" class="mt-6 hidden fade-in">
+                                <button onclick="requestFinalBalance()" id="btn-final-balance" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl transition-colors shadow-lg flex items-center justify-center gap-2">
+                                    <i class="fas fa-hand-holding-dollar text-xl"></i> Send Final Balance Link
+                                </button>
+                            </div>
+
+                            <div class="mt-8 flex justify-end">
+                                <button onclick="deleteCurrentOrder()" class="text-red-500 hover:text-red-400 text-sm font-bold flex items-center gap-2 px-6 py-3 rounded-xl hover:bg-red-500/10 transition-colors w-full md:w-auto justify-center border border-transparent hover:border-red-500/30">
+                                    <i class="fas fa-trash-alt"></i> DELETE ORDER
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="empty-detail-state" class="flex-1 flex flex-col items-center justify-center text-gray-600 p-6 text-center">
+                    <i class="fas fa-satellite-dish text-6xl mb-4 opacity-20"></i>
+                    <p>Select an order from the list to view details.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-calendar" class="hidden flex-1 overflow-y-auto p-4 md:p-6 bg-gray-900">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-2xl font-bold text-white mb-6 border-b border-gray-700 pb-4">Schedule Overview</h2>
+                
+                <div class="mb-4 flex flex-wrap gap-4 md:gap-6 items-center bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-sm">
+                    <span class="text-sm stat-text uppercase tracking-wider w-full md:w-auto mb-2 md:mb-0"><i class="fas fa-filter mr-1"></i> Filter By:</span>
+                    
+                    <label class="flex items-center gap-2 cursor-pointer py-1">
+                        <input type="checkbox" id="cal-filter-pending" value="Pending Approval" checked onchange="updateCalendarEvents()" class="w-5 h-5 accent-yellow-500 cursor-pointer">
+                        <span class="text-sm stat-text">Pending Approval</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer py-1">
+                        <input type="checkbox" id="cal-filter-deposit" value="Pending Deposit" checked onchange="updateCalendarEvents()" class="w-5 h-5 accent-purple-500 cursor-pointer">
+                        <span class="text-sm stat-text">Pending Deposit</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer py-1">
+                        <input type="checkbox" id="cal-filter-approved" value="Approved" checked onchange="updateCalendarEvents()" class="w-5 h-5 accent-green-500 cursor-pointer">
+                        <span class="text-sm stat-text">Approved</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer py-1">
+                        <input type="checkbox" id="cal-filter-completed" value="Completed" checked onchange="updateCalendarEvents()" class="w-5 h-5 accent-blue-500 cursor-pointer">
+                        <span class="text-sm stat-text">Completed</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer py-1">
+                        <input type="checkbox" id="cal-filter-denied" value="Denied" onchange="updateCalendarEvents()" class="w-5 h-5 accent-red-500 cursor-pointer">
+                        <span class="text-sm stat-text">Denied</span>
+                    </label>
+                </div>
+
+                <div class="bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-700 shadow-lg" id="calendar-container" style="min-height: 600px;"></div>
+            </div>
+        </div>
+
+        <div id="view-inventory" class="hidden flex-1 overflow-y-auto p-4 md:p-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl font-bold text-white mb-6 border-b border-gray-700 pb-4">Asset Management</h2>
+                <div id="inventory-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
+            </div>
+        </div>
+
+        <div id="view-create" class="hidden flex-1 overflow-y-auto p-4 md:p-6 bg-gray-900">
+            <div class="max-w-4xl mx-auto bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
+                <div class="p-6 border-b border-gray-700 bg-gray-800/50">
+                    <h2 class="text-2xl font-bold text-white"><i class="fas fa-plus-circle text-cyan-500 mr-2"></i> Create Manual Order</h2>
+                    <p class="text-gray-400 text-sm mt-1">Bypass the public website to instantly log or charge an offline order.</p>
+                </div>
+
+                <div class="p-6 md:p-8 space-y-8">
+                    <div>
+                        <h3 class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-4 border-b border-gray-700 pb-2">1. Client Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
+                                <input type="text" id="create-name" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none" placeholder="Jane Doe">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Phone Number</label>
+                                <input type="tel" id="create-phone" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none" placeholder="(555) 555-5555">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
+                                <input type="email" id="create-email" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none" placeholder="jane@example.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-4 border-b border-gray-700 pb-2">2. Fulfillment Type</h3>
+                        <div class="flex gap-4">
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="orderType" value="softplay" class="peer hidden" checked onchange="toggleOrderType()">
+                                <div class="p-4 border border-gray-600 rounded-xl bg-gray-900 text-center peer-checked:border-cyan-500 peer-checked:bg-cyan-500/10 transition-all">
+                                    <i class="fas fa-shapes text-2xl text-cyan-500 mb-2"></i>
+                                    <div class="font-bold text-white">Softplay Rental</div>
+                                    <div class="text-xs text-gray-400">Requires Date & Address</div>
+                                </div>
+                            </label>
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="orderType" value="favors" class="peer hidden" onchange="toggleOrderType()">
+                                <div class="p-4 border border-gray-600 rounded-xl bg-gray-900 text-center peer-checked:border-cyan-500 peer-checked:bg-cyan-500/10 transition-all">
+                                    <i class="fas fa-gift text-2xl text-cyan-500 mb-2"></i>
+                                    <div class="font-bold text-white">Party Favors</div>
+                                    <div class="text-xs text-gray-400">Pickup Only</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="section-logistics-softplay" class="space-y-4">
+                        <h3 class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-2 border-b border-gray-700 pb-2">3. Event Logistics (Softplay)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Event Date</label>
+                                <input type="date" id="create-sp-date" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Start Time</label>
+                                <input type="time" id="create-sp-time" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none">
+                            </div>
+                            
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Additional Time ($30/hr)</label>
+                                <select id="create-sp-extra-hours" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none">
+                                    <option value="0">Standard 3-Hour Rental</option>
+                                    <option value="1">+1 Hour</option>
+                                    <option value="2">+2 Hours</option>
+                                    <option value="3">+3 Hours</option>
+                                </select>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Delivery Address</label>
+                                <input type="text" id="create-sp-address" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none" placeholder="123 Party Lane, City, State ZIP">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-logistics-favors" class="space-y-4 hidden">
+                        <h3 class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-2 border-b border-gray-700 pb-2">3. Pickup Details (Favors)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Pickup Date</label>
+                                <input type="date" id="create-pf-date" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Event Theme</label>
+                                <input type="text" id="create-pf-theme" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none" placeholder="e.g. Safari, Princess">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-4 border-b border-gray-700 pb-2">4. Build the Package</h3>
+                        <div class="bg-gray-900 border border-gray-600 p-4 rounded-lg h-48 overflow-y-auto" id="create-inventory-list">
+                            </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-4 border-b border-gray-700 pb-2">5. Billing & Execution</h3>
+                        <div class="bg-gray-900 border border-gray-600 p-6 rounded-xl space-y-6">
+                            
+                            <div class="flex items-center gap-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="create-override-toggle" onchange="toggleCustomPrice()" class="w-5 h-5 accent-cyan-500 cursor-pointer">
+                                    <span class="text-sm font-medium text-white">Custom Price Override</span>
+                                </label>
+                                <div class="relative flex-1 max-w-[200px]">
+                                    <span class="absolute left-3 top-3 text-gray-400 font-bold">$</span>
+                                    <input type="number" id="create-custom-price" disabled class="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-8 pr-3 text-white font-mono focus:border-cyan-500 outline-none disabled:opacity-50" placeholder="0.00">
+                                </div>
+                                <span class="text-xs text-gray-500 italic flex-1">Leave unchecked to let the system auto-calculate total + tax.</span>
+                            </div>
+
+                            <hr class="border-gray-700">
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Payment Action Routine</label>
+                                <select id="create-action-route" class="w-full bg-gray-800 border border-gray-600 text-white p-4 rounded-xl focus:border-cyan-500 outline-none font-bold">
+                                    <option value="deposit">Send $100 Stripe Deposit Link (Email Customer)</option>
+                                    <option value="full">Send 100% Stripe Full Payment Link (Email Customer)</option>
+                                    <option value="offline">Mark as Paid Offline - Cash/Zelle (Send Receipt)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-700">
+                        <button onclick="triggerManualOrderValidation()" id="btn-submit-manual" class="w-full bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold py-5 rounded-xl transition-transform transform active:scale-95 text-lg shadow-lg flex items-center justify-center gap-2">
+                            Generate Order & Execute Action <i class="fas fa-rocket"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="view-gallery" class="hidden flex-1 overflow-y-auto p-4 md:p-6 bg-gray-900">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-2xl font-bold text-white mb-6 border-b border-gray-700 pb-4"><i class="fas fa-images text-cyan-500 mr-2"></i> Photo Gallery</h2>
+
+                <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 mb-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Upload New Photo</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-300 mb-2">Photo File</label>
+                            <input type="file" id="gallery-file-input" accept="image/*" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-sm file:bg-cyan-500 file:text-gray-900 file:font-bold file:cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-300 mb-2">Category</label>
+                            <select id="gallery-category" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none">
+                                <option value="soft-play-setups">Soft Play Setups</option>
+                                <option value="cake-toppers">Cake Toppers</option>
+                                <option value="centerpieces-decor">Centerpieces & Decor</option>
+                                <option value="party-favors">Party Favors</option>
+                                <option value="welcome-signs">Welcome Signs</option>
+                                <option value="big-heads">Big Heads</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-300 mb-2">Caption (optional)</label>
+                            <input type="text" id="gallery-caption" placeholder="Short description..." class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-sm focus:border-cyan-500 outline-none">
+                        </div>
+                    </div>
+                    <div id="gallery-preview" class="mt-4 hidden">
+                        <img id="gallery-preview-img" class="h-32 rounded-lg object-cover border border-gray-600" alt="Preview">
+                    </div>
+                    <button onclick="uploadGalleryPhoto()" id="btn-gallery-upload" class="mt-4 bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold py-3 px-6 rounded-lg transition-all flex items-center gap-2">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload Photo
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-white">All Photos (<span id="gallery-count">0</span>)</h3>
+                    <select id="gallery-filter" onchange="renderGalleryGrid()" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none">
+                        <option value="all">All Categories</option>
+                        <option value="soft-play-setups">Soft Play Setups</option>
+                        <option value="cake-toppers">Cake Toppers</option>
+                        <option value="centerpieces-decor">Centerpieces & Decor</option>
+                        <option value="party-favors">Party Favors</option>
+                        <option value="welcome-signs">Welcome Signs</option>
+                        <option value="big-heads">Big Heads</option>
+                    </select>
+                </div>
+
+                <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                <p id="gallery-empty" class="hidden text-center text-gray-400 py-12">No photos uploaded yet.</p>
+            </div>
+        </div>
+
+        <nav class="md:hidden flex fixed bottom-0 left-0 w-full bg-gray-800 border-t border-gray-700 z-50 h-16 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <button onclick="switchView('missions')" id="btn-mob-missions" class="flex-1 flex flex-col items-center justify-center text-cyan-500 transition-colors h-full">
+                <i class="fas fa-clipboard-list text-xl mb-1"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Orders</span>
+            </button>
+            <button onclick="switchView('calendar')" id="btn-mob-calendar" class="flex-1 flex flex-col items-center justify-center text-gray-400 hover:text-cyan-400 transition-colors h-full">
+                <i class="fas fa-calendar-alt text-xl mb-1"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Calendar</span>
+            </button>
+            <button onclick="switchView('inventory')" id="btn-mob-inventory" class="flex-1 flex flex-col items-center justify-center text-gray-400 hover:text-cyan-400 transition-colors h-full">
+                <i class="fas fa-box-open text-xl mb-1"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Inventory</span>
+            </button>
+            <button onclick="switchView('create')" id="btn-mob-create" class="flex-1 flex flex-col items-center justify-center text-gray-400 hover:text-cyan-400 transition-colors h-full">
+                <i class="fas fa-plus-circle text-xl mb-1"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Create</span>
+            </button>
+            <button onclick="switchView('gallery')" id="btn-mob-gallery" class="flex-1 flex flex-col items-center justify-center text-gray-400 hover:text-cyan-400 transition-colors h-full">
+                <i class="fas fa-images text-xl mb-1"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Gallery</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="utils.js"></script>
+    <script src="firebase-init.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
+
+        const { CLOUD_FN_URLS } = window;
+
+        let app, auth, db, storage;
+        let allBookings = [];
+        let inventoryCache = {};
+        let inventoryItems = [];
+        let currentBookingId = null;
+        let pendingManualPayload = null;
+        let sortOrder = 'asc';
+
+        async function getAuthHeaders() {
+            const user = auth && auth.currentUser;
+            if (!user) return { "Content-Type": "application/json" };
+            const token = await user.getIdToken();
+            return { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+        }
+
+        const escapeHtml = window.escapeHtml;
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const isError = type === 'error';
+            const toast = document.createElement('div');
+            toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border text-sm font-medium fade-in max-w-sm ${isError ? 'bg-red-900/90 border-red-500/50 text-red-100' : 'bg-gray-800 border-cyan-500/40 text-white'}`;
+            toast.innerHTML = `<i class="fas ${isError ? 'fa-circle-exclamation text-red-400' : 'fa-circle-check text-cyan-400'} shrink-0"></i><span>${escapeHtml(message)}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.4s'; setTimeout(() => toast.remove(), 400); }, 4000);
+        }
+        window.showToast = showToast;
+
+        function format12HourTime(timeStr) {
+            if (!timeStr || timeStr === "Time Not Provided") return "Time Not Provided";
+            if (!timeStr.includes(':')) return timeStr; 
+            
+            const [hourStr, minuteStr] = timeStr.split(':');
+            let hour = parseInt(hourStr, 10);
+            if (isNaN(hour)) return timeStr; 
+            
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            hour = hour % 12;
+            hour = hour ? hour : 12; 
+            return `${hour}:${minuteStr} ${ampm}`;
+        }
+
+        function calculateDaysRemaining(dateStr) {
+            if (!dateStr || dateStr === "Unknown Date" || dateStr === "???") return "";
+            
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return ""; 
+            
+            const targetDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); 
+            
+            const diffTime = targetDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 0) return `${Math.abs(diffDays)} Days Ago`;
+            if (diffDays === 0) return "Today!";
+            if (diffDays === 1) return "Tomorrow";
+            return `In ${diffDays} Days`;
+        }
+
+        function applyTheme(theme) {
+            const isLight = theme === "light";
+            document.documentElement.classList.toggle("light", isLight);
+            const icon = document.getElementById("themeIcon");
+            const text = document.getElementById("themeText");
+            if (icon) icon.className = isLight ? "fas fa-sun" : "fas fa-moon";
+            if (text) text.textContent = isLight ? "Light" : "Dark";
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const saved = localStorage.getItem("adminTheme") || "light";
+            applyTheme(saved);
+            const btn = document.getElementById("themeToggle");
+            if (btn) {
+                btn.addEventListener("click", () => {
+                    const next = document.documentElement.classList.contains("light") ? "dark" : "light";
+                    localStorage.setItem("adminTheme", next);
+                    applyTheme(next);
+                });
+            }
+        });
+
+        try {
+            const result = await window.initFirebase({ initializeApp, getFirestore, getAuth, getStorage });
+            app = result.app;
+            auth = result.auth;
+            db = result.db;
+            storage = result.storage;
+
+            if (result.config.mapsKey) {
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${result.config.mapsKey}&libraries=places`;
+                script.async = true;
+                script.defer = true;
+                script.onload = () => {
+                    const addressInput = document.getElementById('create-sp-address');
+                    if (addressInput) {
+                        new google.maps.places.Autocomplete(addressInput);
+                    }
+                };
+                document.head.appendChild(script);
+            }
+
+            startAuthListener();
+        } catch (error) {
+            console.error("Failed to load secure configuration:", error);
+            const banner = document.getElementById('login-error-banner');
+            if (banner) {
+                banner.classList.remove('hidden');
+                document.getElementById('login-error-text').textContent =
+                    'Could not connect to server. Please try refreshing the page.';
+            }
+        }
+
+        function startAuthListener() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('dashboard-screen').classList.remove('hidden');
+                    const ledgerLink = document.getElementById('ledger-link');
+                    if (ledgerLink) ledgerLink.href = 'https://docs.google.com/spreadsheets/d/1s9YwlAhoDdiHj2jTB_x9asxp9X4b4pq6u5gDlvuR7jw/edit?gid=0#gid=0';
+                    initializeSystem();
+                } else {
+                    document.getElementById('login-screen').classList.remove('hidden');
+                    document.getElementById('dashboard-screen').classList.add('hidden');
+                }
+            });
+        }
+
+        window.login = async () => {
+            if (!auth) {
+                showToast("Please wait for secure connection to establish.", "error");
+                return;
+            }
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            try { await signInWithEmailAndPassword(auth, email, pass); }
+            catch (e) { showToast("Invalid credentials. Please try again.", "error"); }
+        };
+
+        window.logout = () => signOut(auth);
+
+        async function initializeSystem() {
+            await Promise.allSettled([loadInventory(), loadBookings(), loadGallery()]);
+        }
+
+        function renderInventoryGrid() {
+            const grid = document.getElementById('inventory-grid');
+            const createList = document.getElementById('create-inventory-list');
+            grid.textContent = '';
+            createList.textContent = '';
+
+            inventoryItems.forEach(item => {
+                const isActive = item.is_active !== false;
+                const statusColor = isActive ? 'text-green-400' : 'text-red-500';
+                const btnColor = isActive ? 'bg-red-500/10 text-red-500 hover:bg-red-500/20' : 'bg-green-500/10 text-green-400 hover:bg-green-500/20';
+                const priceDisplay = item.price != null ? '$' + parseFloat(item.price).toFixed(2) : '';
+
+                const card = document.createElement('div');
+                card.className = 'bg-gray-800 rounded-2xl p-5 border border-gray-700 shadow flex items-center justify-between';
+
+                const info = document.createElement('div');
+                const nameEl = document.createElement('div');
+                nameEl.className = 'font-bold text-white text-lg';
+                nameEl.textContent = item.name;
+                info.appendChild(nameEl);
+
+                const statusRow = document.createElement('div');
+                statusRow.className = 'flex items-center gap-3 mt-1';
+                const statusEl = document.createElement('div');
+                statusEl.className = 'text-xs ' + statusColor + ' font-mono';
+                statusEl.textContent = isActive ? 'ACTIVE' : 'OFFLINE';
+                statusRow.appendChild(statusEl);
+                if (priceDisplay) {
+                    const priceEl = document.createElement('div');
+                    priceEl.className = 'text-xs text-gray-400 font-mono';
+                    priceEl.textContent = priceDisplay;
+                    statusRow.appendChild(priceEl);
+                }
+                info.appendChild(statusRow);
+                card.appendChild(info);
+
+                const btn = document.createElement('button');
+                btn.className = btnColor + ' px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow-sm';
+                btn.textContent = isActive ? 'Disable' : 'Enable';
+                btn.onclick = () => toggleAsset(item.id, isActive);
+                card.appendChild(btn);
+                grid.appendChild(card);
+
+                if (isActive) {
+                    const label = document.createElement('label');
+                    label.className = 'flex items-center gap-3 p-2 hover:bg-gray-800 rounded-lg cursor-pointer transition-colors border-b border-gray-800 last:border-0';
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = item.id;
+                    checkbox.className = 'create-item-checkbox w-5 h-5 accent-cyan-500';
+                    label.appendChild(checkbox);
+                    const span = document.createElement('span');
+                    span.className = 'text-sm font-medium text-gray-200 flex-1';
+                    span.textContent = item.name;
+                    label.appendChild(span);
+                    if (priceDisplay) {
+                        const priceSpan = document.createElement('span');
+                        priceSpan.className = 'text-xs text-gray-500 font-mono';
+                        priceSpan.textContent = priceDisplay;
+                        label.appendChild(priceSpan);
+                    }
+                    createList.appendChild(label);
+                }
+            });
+        }
+
+        async function loadInventory() {
+            const snapshot = await getDocs(query(collection(db, "inventory")));
+            inventoryItems = [];
+            snapshot.forEach(docSnap => {
+                const item = docSnap.data();
+                inventoryCache[docSnap.id] = item.name;
+                inventoryItems.push({ ...item, id: docSnap.id });
+            });
+            renderInventoryGrid();
+        }
+
+        window.toggleAsset = async (id, currentStatus) => {
+            try {
+                const headers = await getAuthHeaders();
+                const resp = await fetch(CLOUD_FN_URLS.ADMIN_OPS, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({ action: 'toggle_inventory', item_id: id })
+                });
+                const result = await resp.json();
+                if (!resp.ok) {
+                    showToast(result.error || 'Failed to toggle item.', 'error');
+                    return;
+                }
+                const item = inventoryItems.find(i => i.id === id);
+                if (item) item.is_active = result.is_active;
+                renderInventoryGrid();
+            } catch (e) {
+                console.error(e);
+                showToast('Error toggling item: ' + e.message, 'error');
+            }
+        };
+
+        window.loadBookings = async () => {
+            const list = document.getElementById('bookings-list');
+            list.innerHTML = `<div class="text-center mt-10 p-4"><i class="fas fa-spinner fa-spin text-cyan-500 text-2xl mb-3 block"></i><div class="text-sm text-gray-500">Loading orders...</div></div>`;
+            try {
+                const snapshot = await getDocs(query(collection(db, "bookings"), orderBy("date", "asc")));
+                allBookings = [];
+                snapshot.forEach(doc => allBookings.push({ id: doc.id, ...doc.data() }));
+                applyFilters();
+                updateCalendarEvents();
+            } catch (e) {
+                console.error(e);
+                list.innerHTML = `<div class="text-red-500 text-center p-4">System Malfunction: ${escapeHtml(e.message)}</div>`;
+            }
+        }
+
+        function updateBookingLocally(bookingId, updates) {
+            const booking = allBookings.find(b => b.id === bookingId);
+            if (booking) {
+                Object.assign(booking, updates);
+                applyFilters();
+                updateCalendarEvents();
+                // Re-select the booking to refresh the detail panel
+                // applyFilters() assigns card.id = 'card-' + b.id, so getElementById is reliable
+                if (bookingId === currentBookingId) {
+                    const card = document.getElementById('card-' + bookingId);
+                    if (card) selectBooking(booking, card);
+                }
+            }
+        }
+
+        window.updateCalendarEvents = () => {
+            const showPending = document.getElementById('cal-filter-pending').checked;
+            const showDeposit = document.getElementById('cal-filter-deposit').checked;
+            const showApproved = document.getElementById('cal-filter-approved').checked;
+            const showCompleted = document.getElementById('cal-filter-completed').checked;
+            const showDenied = document.getElementById('cal-filter-denied').checked;
+
+            const allowedStatuses = [];
+            if (showPending) allowedStatuses.push('Pending Approval', 'Pending'); 
+            if (showDeposit) allowedStatuses.push('Pending Deposit'); 
+            if (showApproved) allowedStatuses.push('Approved', 'Confirmed'); 
+            if (showCompleted) allowedStatuses.push('Completed');
+            if (showDenied) allowedStatuses.push('Denied', 'Cancelled');
+
+            const eventsData = allBookings
+                .filter(b => allowedStatuses.includes(b.status || 'Pending Approval'))
+                .map(b => ({
+                    id: b.id,
+                    title: `${b.customer?.name || "Order"}`,
+                    start: b.date || b.event_date,
+                    color: getEventColor(b.status),
+                    extendedProps: {
+                        status: b.status || 'Pending Approval',
+                        address: b.delivery_address || b.address || "No Address Provided",
+                        itemsCount: (b.items || []).length + (b.favors || []).length
+                    }
+                }));
+
+            if (!window.calendarInstance) {
+                const calEl = document.getElementById('calendar-container');
+                const isMobile = window.innerWidth < 768; 
+                
+                window.calendarInstance = new FullCalendar.Calendar(calEl, {
+                    initialView: isMobile ? 'listWeek' : 'dayGridMonth', 
+                    height: '100%',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,listWeek' 
+                    },
+                    views: {
+                        listWeek: { buttonText: 'Agenda List' },
+                        dayGridMonth: { buttonText: 'Month' }
+                    },
+                    events: eventsData,
+                    eventClick: function(info) {
+                        const bookingId = info.event.id;
+                        const bookingDate = info.event.startStr;
+                        
+                        switchView('missions');
+                        document.getElementById('date-filter').value = bookingDate;
+                        applyFilters();
+                        
+                        setTimeout(() => {
+                            const targetCard = document.getElementById(`card-${bookingId}`);
+                            if (targetCard) {
+                                targetCard.click();
+                                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }, 50);
+                    },
+                    eventDidMount: function(info) {
+                        const props = info.event.extendedProps;
+                        info.el.title = `Status: ${props.status}\nLocation: ${props.address}\nItems in Order: ${props.itemsCount}\n\n(Click to manage this specific order)`;
+                    },
+                    dateClick: function(info) {
+                        switchView('missions');
+                        document.getElementById('date-filter').value = info.dateStr;
+                        applyFilters();
+                    }
+                });
+                window.calendarInstance.render();
+            } else {
+                window.calendarInstance.removeAllEvents();
+                window.calendarInstance.addEventSource(eventsData);
+            }
+        };
+
+        function getEventColor(status) {
+            if (status === 'Approved' || status === 'Confirmed') return '#22c55e'; 
+            if (status === 'Completed') return '#3b82f6'; 
+            if (status === 'Pending Deposit') return '#a855f7'; 
+            if (status === 'Denied' || status === 'Cancelled') return '#ef4444'; 
+            return '#eab308'; 
+        }
+
+        window.toggleSort = () => {
+            sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            const btn = document.getElementById('sort-toggle-btn');
+            document.getElementById('sort-label').textContent = sortOrder === 'asc' ? 'Oldest' : 'Newest';
+            btn.querySelector('i').className = sortOrder === 'asc' ? 'fas fa-sort-amount-down' : 'fas fa-sort-amount-up';
+            applyFilters();
+        };
+
+        window.applyFilters = () => {
+            const orderIdInput = (document.getElementById('order-id-filter').value || '').trim().toLowerCase();
+            const dateInput = document.getElementById('date-filter').value;
+            const statusInput = document.getElementById('status-filter').value;
+            const paymentInput = document.getElementById('payment-filter').value;
+            const list = document.getElementById('bookings-list');
+            let count = 0;
+            list.innerHTML = '';
+
+            const filtered = allBookings.filter(b => {
+                const bDate = b.date || b.event_date;
+                const bStatus = b.status || 'Pending Approval';
+                const bPayment = b.payment_status || 'Unpaid';
+
+                if (orderIdInput && !(b.order_id || b.id || '').toLowerCase().includes(orderIdInput)) return false;
+                if (dateInput && bDate !== dateInput) return false;
+                if (statusInput && bStatus !== statusInput) return false;
+                if (paymentInput && bPayment !== paymentInput) return false;
+
+                return true;
+            });
+
+            filtered.sort((a, b) => {
+                const da = a.date || a.event_date || '';
+                const db_ = b.date || b.event_date || '';
+                return sortOrder === 'asc' ? da.localeCompare(db_) : db_.localeCompare(da);
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="text-center text-gray-500 mt-10 p-4">No orders found matching these filters.</div>`;
+                document.getElementById('stat-count').innerText = "0";
+                return;
+            }
+
+            filtered.forEach(b => {
+                count++;
+                const name = b.customer?.name || b.customer_name || "Unknown";
+                const date = b.date || b.event_date || "???";
+                const statusColor = getStatusColor(b.status);
+                
+                const payStatus = b.payment_status || "Unpaid";
+                let payBadgeClass = "pay-badge-unpaid";
+                if (payStatus === "Paid in Full") payBadgeClass = "pay-badge-paid";
+                else if (payStatus === "Security Deposit Paid") payBadgeClass = "pay-badge-deposit";
+                
+                const card = document.createElement('div');
+                card.id = `card-${b.id}`;
+                card.className = `p-5 rounded-2xl bg-gray-800 border border-gray-700 hover:border-gray-500 cursor-pointer transition-all mb-3 booking-card shadow-sm`;
+                card.onclick = () => selectBooking(b, card);
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="font-bold text-white text-lg">${escapeHtml(name)}</div>
+                            <div class="text-sm text-gray-400 font-mono mt-1"><i class="fas fa-calendar mr-1"></i> ${escapeHtml(date)}</div>
+                        </div>
+                        <div class="flex flex-col items-end gap-1.5">
+                            <span class="px-3 py-1 rounded-md text-[10px] font-bold uppercase bg-gray-900 border ${statusColor}">${escapeHtml(b.status || 'Pending Approval')}</span>
+                            <span class="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase bg-gray-900 border ${payBadgeClass}">${escapeHtml(payStatus)}</span>
+                        </div>
+                    </div>`;
+                list.appendChild(card);
+            });
+
+            document.getElementById('stat-count').innerText = count;
+        };
+
+        window.clearAllFilters = () => {
+            document.getElementById('order-id-filter').value = '';
+            document.getElementById('date-filter').value = '';
+            document.getElementById('status-filter').value = '';
+            document.getElementById('payment-filter').value = '';
+            applyFilters();
+        };
+
+        function getStatusColor(status) {
+            if (status === 'Approved' || status === 'Confirmed') return 'text-green-400 border-green-500/30 approved-badge';
+            if (status === 'Completed') return 'text-blue-400 border-blue-500/30 completed-badge';
+            if (status === 'Pending Deposit') return 'text-purple-400 border-purple-500/30 pending-deposit-badge';
+            if (status === 'Denied' || status === 'Cancelled') return 'text-red-400 border-red-500/30 denied-badge';
+            return 'text-yellow-400 border-yellow-500/30 pending-badge'; 
+        }
+
+        function selectBooking(data, cardElement) {
+            document.querySelectorAll('.booking-card').forEach(c => c.classList.remove('selected-card'));
+            cardElement.classList.add('selected-card');
+            document.getElementById('empty-detail-state').classList.add('hidden');
+            document.getElementById('detail-panel').classList.remove('hidden');
+
+            currentBookingId = data.id;
+            document.getElementById('detail-id').innerText = `ID: ${data.id.toUpperCase()}`;
+            document.getElementById('detail-customer').innerText = data.customer?.name || data.customer_name || "Unknown";
+            
+            const rawDate = data.date || data.event_date || "Unknown Date";
+            const daysRemaining = calculateDaysRemaining(rawDate);
+            document.getElementById('detail-date').innerHTML = `${escapeHtml(rawDate)} <span class="ml-2 text-[10px] font-bold text-cyan-900 bg-cyan-400 px-2 py-0.5 rounded shadow-sm">${escapeHtml(daysRemaining)}</span>`;
+            
+            const rawTime = data.time || "Time Not Provided";
+            document.getElementById('detail-time').innerText = format12HourTime(rawTime);
+            
+            document.getElementById('detail-total').innerText = `$${(data.total_price || 0).toFixed(2)}`;
+            
+            let uiStatus = data.status || "Pending Approval";
+            if (uiStatus === "Confirmed") uiStatus = "Approved";
+            if (uiStatus === "Cancelled") uiStatus = "Denied";
+            document.getElementById('detail-status').value = uiStatus;
+
+            const pStatus = data.payment_status || "Unpaid";
+            document.getElementById('detail-payment-status').innerText = pStatus;
+
+            if (pStatus === "Security Deposit Paid" || pStatus === "Final Balance Sent") {
+                document.getElementById('final-balance-container').classList.remove('hidden');
+                if (pStatus === "Final Balance Sent") {
+                    document.getElementById('btn-final-balance').innerHTML = `<i class="fas fa-envelope-open-text text-xl"></i> Resend Final Balance Link`;
+                } else {
+                    document.getElementById('btn-final-balance').innerHTML = `<i class="fas fa-hand-holding-dollar text-xl"></i> Send Final Balance Link`;
+                }
+            } else {
+                document.getElementById('final-balance-container').classList.add('hidden');
+            }
+
+            const isPickup = data.order_type === 'favors' || data.order_type === 'ecommerce_pickup' || data.items_ordered_text;
+            const address = data.delivery_address || data.address || "No Address Provided";
+            const locationCard = document.getElementById('target-location-card');
+            const contactCard = document.getElementById('contact-card');
+            const pickupBadge = document.getElementById('pickup-badge');
+            if (isPickup) {
+                locationCard.classList.add('hidden');
+                contactCard.className = 'bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-lg col-span-1 lg:col-span-2';
+                pickupBadge.classList.remove('hidden');
+                pickupBadge.classList.add('inline-flex');
+            } else {
+                locationCard.classList.remove('hidden');
+                locationCard.className = 'bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-lg';
+                locationCard.innerHTML = `
+                    <h3 class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-4"><i class="fas fa-map-marker-alt mr-2"></i> Target Location</h3>
+                    <p class="text-lg text-white font-medium leading-relaxed mb-4">${escapeHtml(address)}</p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl transition-colors font-medium text-sm gap-2 shadow-sm">
+                        <i class="fas fa-location-arrow"></i> Open Navigation
+                    </a>`;
+                contactCard.className = 'bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-lg';
+                pickupBadge.classList.add('hidden');
+                pickupBadge.classList.remove('inline-flex');
+            }
+
+            const phone = data.customer?.phone || "N/A";
+            const email = data.customer?.email || "N/A";
+            document.getElementById('detail-phone').innerText = phone;
+            document.getElementById('detail-email').innerText = email;
+            document.getElementById('btn-phone').href = `tel:${phone}`;
+            document.getElementById('btn-email').href = `mailto:${email}`;
+
+            // ── Venue & Delivery Details ────────────────────────────────
+            const venueCard = document.getElementById('venue-delivery-card');
+            const venueContent = document.getElementById('venue-delivery-content');
+            if (data.venue_type && !isPickup) {
+                venueCard.classList.remove('hidden');
+                let venueHtml = `
+                    <div class="flex items-center gap-2 text-sm text-gray-300 bg-gray-700/50 p-3 rounded-lg">
+                        <i class="fas fa-building text-cyan-500 text-xs"></i>
+                        <span class="text-gray-400 text-xs uppercase font-bold mr-1">Venue:</span>
+                        <span class="font-medium text-white">${escapeHtml(data.venue_type)}</span>
+                    </div>`;
+
+                const vd = data.venue_details || {};
+                const subDetails = [];
+                if (vd.gate_code) subDetails.push({ icon: 'fa-key', label: 'Gate Code', value: vd.gate_code });
+                if (vd.floor_unit) subDetails.push({ icon: 'fa-layer-group', label: 'Floor / Unit', value: vd.floor_unit });
+                if (vd.elevator) subDetails.push({ icon: 'fa-elevator', label: 'Elevator', value: vd.elevator });
+                if (vd.shelter) subDetails.push({ icon: 'fa-campground', label: 'Shelter', value: vd.shelter });
+                if (vd.electrical) subDetails.push({ icon: 'fa-plug', label: 'Electrical', value: vd.electrical });
+                if (vd.venue_name) subDetails.push({ icon: 'fa-landmark', label: 'Venue Name', value: vd.venue_name });
+                if (vd.loading_dock) subDetails.push({ icon: 'fa-dolly', label: 'Loading Dock', value: vd.loading_dock });
+
+                if (subDetails.length > 0) {
+                    venueHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">`;
+                    subDetails.forEach(d => {
+                        venueHtml += `
+                            <div class="flex items-center gap-2 text-sm text-gray-300 bg-gray-700/50 p-3 rounded-lg">
+                                <i class="fas ${d.icon} text-cyan-500 text-xs"></i>
+                                <span class="text-gray-400 text-xs uppercase font-bold mr-1">${escapeHtml(d.label)}:</span>
+                                <span class="font-medium text-white">${escapeHtml(d.value)}</span>
+                            </div>`;
+                    });
+                    venueHtml += `</div>`;
+                }
+
+                if (data.delivery_notes) {
+                    venueHtml += `
+                        <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mt-1">
+                            <div class="text-[10px] text-yellow-500 uppercase tracking-wide font-bold mb-1"><i class="fas fa-sticky-note mr-1"></i> Delivery Notes</div>
+                            <div class="text-yellow-300 text-sm leading-snug">${escapeHtml(data.delivery_notes)}</div>
+                        </div>`;
+                }
+
+                venueContent.innerHTML = venueHtml;
+            } else {
+                venueCard.classList.add('hidden');
+                venueContent.innerHTML = '';
+            }
+
+            const itemsContainer = document.getElementById('detail-items');
+            itemsContainer.innerHTML = '';
+
+            if (data.order_type === 'ecommerce_pickup' || data.cart_items) {
+                // ── E-commerce party favor order ─────────────────────────────
+                // Event context header
+                const rawInspLink = data.inspiration_link || '';
+                const safeInspLink = /^https?:\/\//i.test(rawInspLink) ? rawInspLink : '';
+                const inspLink = safeInspLink && rawInspLink !== 'None provided'
+                    ? `<a href="${escapeHtml(safeInspLink)}" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline text-xs flex items-center gap-1 mt-1"><i class="fas fa-link text-xs"></i> Inspiration Link</a>`
+                    : '';
+                itemsContainer.innerHTML += `
+                    <div class="col-span-1 sm:col-span-2 bg-gray-700/40 rounded-xl p-3 flex flex-wrap gap-x-6 gap-y-1 text-sm mb-1">
+                        <span class="text-gray-400"><i class="fas fa-party-horn mr-1 text-cyan-400"></i> <span class="text-gray-300 font-medium">${escapeHtml(data.event_type || 'Event')}</span></span>
+                        <span class="text-gray-400"><i class="fas fa-calendar-check mr-1 text-cyan-400"></i> Pickup: <span class="text-gray-300 font-medium">${escapeHtml(data.date || 'TBD')}</span></span>
+                        ${inspLink}
+                    </div>`;
+
+                // One card per cart item
+                (data.cart_items || []).forEach(item => {
+                    const optional = [
+                        item.characters ? `<div class="text-xs text-gray-400 mt-1"><span class="text-gray-500 uppercase tracking-wide text-[10px]">Characters</span><br>${escapeHtml(item.characters)}</div>` : '',
+                        item.notes      ? `<div class="text-xs text-gray-400 mt-1"><span class="text-gray-500 uppercase tracking-wide text-[10px]">Notes</span><br>${escapeHtml(item.notes)}</div>` : ''
+                    ].join('');
+
+                    const rawHex = item.primaryColorHex || '';
+                    const safeHex = /^#[0-9a-fA-F]{3,8}$/.test(rawHex) ? rawHex : '';
+                    itemsContainer.innerHTML += `
+                        <div class="col-span-1 bg-gray-700/50 rounded-xl p-4 border border-gray-600/50 space-y-2">
+                            <div class="flex justify-between items-start">
+                                <span class="font-semibold text-gray-200 text-sm leading-tight">${escapeHtml(item.name)}</span>
+                                <span class="text-cyan-400 font-bold text-sm shrink-0 ml-2">×${escapeHtml(item.qty)}</span>
+                            </div>
+                            <div class="text-xs text-gray-400">
+                                <span class="text-gray-500 uppercase tracking-wide text-[10px]">Child</span><br>
+                                ${escapeHtml(item.childName || '—')}, Age ${escapeHtml(item.childAge || '—')}
+                            </div>
+                            <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-2">
+                                <div class="text-[10px] text-yellow-500 uppercase tracking-wide font-bold mb-0.5">Exact Text to Print</div>
+                                <div class="text-yellow-300 text-xs font-medium leading-snug">${escapeHtml(item.exactText || '—')}</div>
+                            </div>
+                            <div class="text-xs text-gray-400">
+                                <span class="text-gray-500 uppercase tracking-wide text-[10px]">Theme / Colors</span><br>
+                                <span class="inline-flex items-center gap-1.5 flex-wrap">${safeHex ? `<span class="inline-flex items-center gap-1"><span class="inline-block w-3.5 h-3.5 rounded-full border border-gray-500 shrink-0" style="background:${safeHex}"></span><span class="text-cyan-400 font-mono text-[10px] cursor-pointer hover:text-cyan-300 transition-colors" data-hex="${safeHex}" onclick="navigator.clipboard.writeText(this.dataset.hex);this.dataset.orig=this.textContent;this.textContent='Copied!';setTimeout(()=>this.textContent=this.dataset.orig,1200)" title="Click to copy">${safeHex}</span></span>` : ''}${escapeHtml(item.theme || '—')} &bull; ${escapeHtml(item.colorPalette || '—')}</span>
+                            </div>
+                            ${optional}
+                        </div>`;
+                });
+            } else {
+                // ── Softplay + favor order ───────────────────────────────────
+                (data.items || []).forEach(item => {
+                    const isObj = typeof item === 'object' && item !== null;
+                    const itemId = isObj ? item.id : item;
+                    const name = inventoryCache[itemId] || "Unknown Item";
+
+                    if (isObj && (item.child_name || item.child_age || item.theme || item.notes || item.custom_decals || item.num_kids || item.preferred_activity)) {
+                        const details = [];
+                        if (item.child_name || item.child_age) {
+                            details.push(`<div class="text-xs text-gray-400"><span class="text-gray-500 uppercase tracking-wide text-[10px]">Child</span><br>${escapeHtml(item.child_name || '—')}, Age ${escapeHtml(item.child_age || '—')}</div>`);
+                        }
+                        if (item.theme) {
+                            details.push(`<div class="text-xs text-gray-400"><span class="text-gray-500 uppercase tracking-wide text-[10px]">Theme</span><br>${escapeHtml(item.theme)}</div>`);
+                        }
+                        if (item.num_kids) {
+                            details.push(`<div class="text-xs text-gray-400"><span class="text-gray-500 uppercase tracking-wide text-[10px]">Number of Kids</span><br>${escapeHtml(item.num_kids)}</div>`);
+                        }
+                        if (item.preferred_activity) {
+                            details.push(`<div class="text-xs text-gray-400"><span class="text-gray-500 uppercase tracking-wide text-[10px]">Preferred Activity</span><br>${escapeHtml(item.preferred_activity)}</div>`);
+                        }
+                        if (item.notes) {
+                            details.push(`<div class="text-xs text-gray-400"><span class="text-gray-500 uppercase tracking-wide text-[10px]">Notes</span><br>${escapeHtml(item.notes)}</div>`);
+                        }
+
+                        // Custom decals badge for mini bouncers
+                        const decalBadge = item.custom_decals
+                            ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-400 text-[10px] font-bold uppercase tracking-wide">
+                                <i class="fas fa-paint-brush text-[9px]"></i> Custom Decals (+$40)
+                              </span>`
+                            : '';
+
+                        // Custom decal detail fields
+                        let decalDetails = '';
+                        if (item.custom_decals) {
+                            const decalParts = [];
+                            if (item.decal_theme) decalParts.push(`<div class="text-xs text-gray-400"><span class="text-gray-500 uppercase tracking-wide text-[10px]">Decal Theme</span><br>${escapeHtml(item.decal_theme)}</div>`);
+                            if (item.decal_name) decalParts.push(`<div class="text-xs text-gray-400"><span class="text-gray-500 uppercase tracking-wide text-[10px]">Decal Name</span><br>${escapeHtml(item.decal_name)}</div>`);
+                            decalDetails = decalParts.join('');
+                        }
+
+                        itemsContainer.innerHTML += `
+                            <div class="col-span-1 bg-gray-700/50 rounded-xl p-4 border border-gray-600/50 space-y-2">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <i class="fas fa-check-circle text-cyan-500 text-xs"></i>
+                                    <span class="font-semibold text-gray-200 text-sm leading-tight">${escapeHtml(name)}</span>
+                                    ${decalBadge}
+                                </div>
+                                ${details.join('')}
+                                ${decalDetails}
+                            </div>`;
+                    } else {
+                        itemsContainer.innerHTML += `<div class="flex items-center gap-2 text-sm text-gray-300 bg-gray-700/50 p-3 rounded-lg"><i class="fas fa-check-circle text-cyan-500 text-xs"></i> ${escapeHtml(name)}</div>`;
+                    }
+                });
+
+                const extraHours = parseInt(data.extra_hours) || 0;
+                if (extraHours > 0) {
+                    itemsContainer.innerHTML += `<div class="flex items-center gap-2 text-sm text-purple-400 bg-purple-900/20 p-3 rounded-lg border border-purple-500/30 col-span-1 sm:col-span-2"><i class="fas fa-clock text-purple-400 text-xs"></i> +${extraHours} Additional Hour(s) Requested</div>`;
+                }
+
+                // ── Party Favors (from inquiry form) ───────────────────────
+                const favors = data.favors || [];
+                if (favors.length > 0) {
+                    itemsContainer.innerHTML += `<div class="col-span-1 sm:col-span-2 text-gray-400 text-xs uppercase font-bold tracking-wider mt-3 pt-3 border-t border-gray-700"><i class="fas fa-gift mr-1"></i> Party Favors</div>`;
+                    favors.forEach(f => {
+                        const favorName = inventoryCache[f.id] || f.id;
+                        const qty = parseInt(f.quantity) || 1;
+                        const details = [];
+                        if (f.theme) details.push(`<span class="text-gray-400 text-xs"><span class="text-gray-500 uppercase text-[10px] tracking-wide">Theme:</span> ${escapeHtml(f.theme)}</span>`);
+                        if (f.customization) details.push(`<span class="text-gray-400 text-xs"><span class="text-gray-500 uppercase text-[10px] tracking-wide">Notes:</span> ${escapeHtml(f.customization)}</span>`);
+                        itemsContainer.innerHTML += `
+                            <div class="col-span-1 bg-gray-700/50 rounded-xl p-4 border border-gray-600/50 space-y-1">
+                                <div class="flex justify-between items-start">
+                                    <span class="font-semibold text-gray-200 text-sm leading-tight">${escapeHtml(favorName)}</span>
+                                    <span class="text-cyan-400 font-bold text-sm shrink-0 ml-2">&times;${escapeHtml(qty)}</span>
+                                </div>
+                                ${details.length > 0 ? `<div class="flex flex-col gap-1 mt-1">${details.join('')}</div>` : ''}
+                            </div>`;
+                    });
+                }
+            }
+
+            if (window.innerWidth < 768) {
+                document.getElementById('detail-pane-container').classList.remove('translate-x-full');
+            }
+        }
+
+        window.closeMobileDetail = () => {
+            document.getElementById('detail-pane-container').classList.add('translate-x-full');
+        };
+
+        window.updateBookingStatus = async (newStatus) => {
+            if (!currentBookingId) return;
+            const statusDropdown = document.getElementById('detail-status');
+
+            if (newStatus === "Approved") {
+                const booking = allBookings.find(b => b.id === currentBookingId);
+                if (!booking) { alert("Booking not found. Please reload the page."); return; }
+                const isPickup = booking.order_type === 'favors' || booking.order_type === 'ecommerce_pickup' || booking.items_ordered_text;
+                
+                const extraSection = document.getElementById('extra-hours-approval-section');
+                if (!isPickup) {
+                    extraSection.classList.remove('hidden');
+                    const reqHours = parseInt(booking.extra_hours) || 0;
+                    document.getElementById('requested-extra-hours-display').innerText = reqHours;
+                    document.getElementById('approve-extra-hours').value = reqHours; 
+                } else {
+                    extraSection.classList.add('hidden');
+                }
+
+                document.getElementById('payment-modal').classList.remove('hidden');
+                document.getElementById('payment-modal').classList.add('flex');
+                return;
+            }
+
+            if (newStatus === "Denied") {
+                document.getElementById('rejection-modal').classList.remove('hidden');
+                document.getElementById('rejection-modal').classList.add('flex');
+                return;
+            }
+
+            try {
+                const headers = await getAuthHeaders();
+                const resp = await fetch(CLOUD_FN_URLS.ADMIN_OPS, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({ action: 'update_status', booking_id: currentBookingId, status: newStatus })
+                });
+                const result = await resp.json();
+                if (!resp.ok) {
+                    showToast(result.error || 'Failed to update status.', 'error');
+                    return;
+                }
+                const booking = allBookings.find(b => b.id === currentBookingId);
+                if (booking) booking.status = newStatus;
+                applyFilters();
+                updateCalendarEvents();
+            } catch (e) {
+                console.error(e);
+                showToast('Error updating status: ' + e.message, 'error');
+            }
+        };
+
+        window.cancelBilling = () => {
+            document.getElementById('payment-modal').classList.add('hidden');
+            document.getElementById('payment-modal').classList.remove('flex');
+            const statusDropdown = document.getElementById('detail-status');
+            const booking = allBookings.find(b => b.id === currentBookingId);
+            statusDropdown.value = (booking && booking.status) || "Pending Approval";
+        };
+
+        window.cancelRejection = () => {
+            document.getElementById('rejection-modal').classList.add('hidden');
+            document.getElementById('rejection-modal').classList.remove('flex');
+            document.getElementById('rejection-reason').value = "";
+            const statusDropdown = document.getElementById('detail-status');
+            const booking = allBookings.find(b => b.id === currentBookingId);
+            statusDropdown.value = (booking && booking.status) || "Pending Approval";
+        };
+
+        window.confirmBilling = async (paymentType) => {
+            document.getElementById('payment-modal').classList.add('hidden');
+            document.getElementById('payment-modal').classList.remove('flex');
+            const statusDropdown = document.getElementById('detail-status');
+            statusDropdown.disabled = true; 
+            
+            const approvedHours = parseInt(document.getElementById('approve-extra-hours').value) || 0;
+
+            try {
+                const res = await fetch(CLOUD_FN_URLS.DEPOSIT_LINK, {
+                    method: "POST",
+                    headers: await getAuthHeaders(),
+                    body: JSON.stringify({
+                        booking_id: currentBookingId,
+                        payment_type: paymentType,
+                        approved_extra_hours: approvedHours
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok && data.status === "success") {
+                    showToast("Payment link generated and emailed. Status updated.", "success");
+                    updateBookingLocally(currentBookingId, {
+                        status: 'Pending Deposit',
+                        payment_link: data.url,
+                        extra_hours: approvedHours
+                    });
+                    statusDropdown.disabled = false;
+                    return;
+                } else {
+                    showToast("Error generating deposit link: " + (data.error || "Unknown Error"), "error");
+                    statusDropdown.value = "Pending Approval";
+                    statusDropdown.disabled = false;
+                    return;
+                }
+            } catch (e) {
+                console.error("Network error:", e);
+                showToast("Network error. Could not contact the server.", "error");
+                statusDropdown.value = "Pending Approval";
+                statusDropdown.disabled = false;
+                return;
+            }
+        };
+
+        window.confirmRejection = async () => {
+            const reason = document.getElementById('rejection-reason').value.trim();
+            if (!reason) {
+                showToast("Please provide a reason for the denial.", "error");
+                return;
+            }
+
+            const btn = document.getElementById('btn-confirm-reject');
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(CLOUD_FN_URLS.REJECT_ORDER, {
+                    method: "POST",
+                    headers: await getAuthHeaders(),
+                    body: JSON.stringify({
+                        booking_id: currentBookingId,
+                        reason: reason
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok && data.status === "success") {
+                    document.getElementById('rejection-modal').classList.add('hidden');
+                    document.getElementById('rejection-modal').classList.remove('flex');
+                    document.getElementById('rejection-reason').value = "";
+                    showToast("Order denied. Customer notified.", "success");
+                    updateBookingLocally(currentBookingId, {
+                        status: 'Denied',
+                        rejection_reason: reason
+                    });
+                } else {
+                    showToast("Error: " + (data.error || "Unknown Error"), "error");
+                }
+            } catch (e) {
+                console.error("Network error processing denial.");
+            } finally {
+                btn.innerHTML = `Send Denial Email <i class="fas fa-paper-plane"></i>`;
+                btn.disabled = false;
+            }
+        };
+
+        window.requestFinalBalance = async () => {
+            if (!currentBookingId) return;
+            
+            const btn = document.getElementById('btn-final-balance');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin text-xl"></i> Generating Invoice...`;
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(CLOUD_FN_URLS.FINAL_BALANCE, {
+                    method: "POST",
+                    headers: await getAuthHeaders(),
+                    body: JSON.stringify({ booking_id: currentBookingId })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok && data.status === "success") {
+                    showToast("Final balance link sent to customer.", "success");
+                    updateBookingLocally(currentBookingId, {
+                        payment_status: 'Final Balance Sent',
+                        final_balance_link: data.url
+                    });
+                } else {
+                    showToast("Error generating final balance link: " + (data.error || "Unknown Error"), "error");
+                }
+            } catch (e) {
+                console.error("Network error:", e);
+                showToast("Network error. Could not contact the server.", "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        window.toggleOrderType = () => {
+            const isSoftplay = document.querySelector('input[name="orderType"]:checked').value === "softplay";
+            if (isSoftplay) {
+                document.getElementById('section-logistics-softplay').classList.remove('hidden');
+                document.getElementById('section-logistics-favors').classList.add('hidden');
+            } else {
+                document.getElementById('section-logistics-softplay').classList.add('hidden');
+                document.getElementById('section-logistics-favors').classList.remove('hidden');
+            }
+        };
+
+        window.toggleCustomPrice = () => {
+            const isChecked = document.getElementById('create-override-toggle').checked;
+            const input = document.getElementById('create-custom-price');
+            input.disabled = !isChecked;
+            if (!isChecked) input.value = '';
+        };
+
+        window.triggerManualOrderValidation = async () => {
+            const name = document.getElementById('create-name').value.trim();
+            const email = document.getElementById('create-email').value.trim();
+            const phone = document.getElementById('create-phone').value.trim();
+            const orderType = document.querySelector('input[name="orderType"]:checked').value;
+            
+            if (!name || !email) { showToast("Please provide at least a Name and Email.", "error"); return; }
+
+            const selectedItems = Array.from(document.querySelectorAll('.create-item-checkbox:checked')).map(cb => cb.value);
+            if (selectedItems.length === 0) { showToast("Please select at least one package or item.", "error"); return; }
+
+            let dateStr = "";
+            let timeStr = "";
+            let addressStr = "";
+            let themeStr = "";
+            let extraHours = 0; 
+
+            if (orderType === "softplay") {
+                dateStr = document.getElementById('create-sp-date').value;
+                timeStr = document.getElementById('create-sp-time').value;
+                addressStr = document.getElementById('create-sp-address').value;
+                extraHours = parseInt(document.getElementById('create-sp-extra-hours').value) || 0; 
+                if (!dateStr || !addressStr) { showToast("Please provide an Event Date and Address for Softplay.", "error"); return; }
+            } else {
+                dateStr = document.getElementById('create-pf-date').value;
+                themeStr = document.getElementById('create-pf-theme').value;
+                if (!dateStr) { showToast("Please provide a Pickup Date for Party Favors.", "error"); return; }
+            }
+
+            const overridePrice = document.getElementById('create-override-toggle').checked ? document.getElementById('create-custom-price').value : null;
+            const actionRoute = document.getElementById('create-action-route').value;
+
+            pendingManualPayload = {
+                customer: { name, email, phone },
+                order_type: orderType,
+                date: dateStr,
+                time: timeStr,
+                extra_hours: extraHours, 
+                address: addressStr,
+                theme: themeStr,
+                items: selectedItems,
+                custom_price: overridePrice,
+                action: actionRoute,
+                force_override: false 
+            };
+
+            await confirmManualOrder(false);
+        };
+
+        window.confirmManualOrder = async (isForced) => {
+            if (!pendingManualPayload) return;
+            
+            pendingManualPayload.force_override = isForced;
+            document.getElementById('conflict-modal').classList.add('hidden');
+            document.getElementById('conflict-modal').classList.remove('flex');
+            
+            const btn = document.getElementById('btn-submit-manual');
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing Order...`;
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(CLOUD_FN_URLS.ADMIN_CREATE, {
+                    method: "POST",
+                    headers: await getAuthHeaders(),
+                    body: JSON.stringify(pendingManualPayload)
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    if (data.conflict) {
+                        document.getElementById('conflict-items-list').innerHTML = data.conflicting_names.map(name => `<div>- ${escapeHtml(name)}</div>`).join('');
+                        document.getElementById('conflict-modal').classList.remove('hidden');
+                        document.getElementById('conflict-modal').classList.add('flex');
+                    } else {
+                        showToast("Order created successfully.", "success");
+                        document.getElementById('create-name').value = '';
+                        document.getElementById('create-email').value = '';
+                        document.getElementById('create-phone').value = '';
+                        document.getElementById('create-sp-address').value = '';
+                        document.getElementById('create-pf-theme').value = '';
+                        document.getElementById('create-sp-date').value = '';
+                        document.getElementById('create-sp-time').value = '';
+                        document.getElementById('create-pf-date').value = '';
+                        document.getElementById('create-sp-extra-hours').value = '0';
+                        document.querySelectorAll('.create-item-checkbox').forEach(cb => cb.checked = false);
+
+                        await window.loadBookings();
+                        switchView('missions');
+                    }
+                } else {
+                    showToast("Error: " + (data.error || "Failed to create manual order."), "error");
+                }
+            } catch (e) {
+                console.error("Network Error:", e);
+                showToast("Network error. Backend not connected.", "error");
+            } finally {
+                btn.innerHTML = origHTML;
+                btn.disabled = false;
+            }
+        };
+
+        window.closeConflictModal = () => {
+            document.getElementById('conflict-modal').classList.add('hidden');
+            document.getElementById('conflict-modal').classList.remove('flex');
+            pendingManualPayload = null; 
+        };
+
+        window.switchView = (viewName) => {
+            const views = {
+                'missions': document.getElementById('view-missions'),
+                'calendar': document.getElementById('view-calendar'),
+                'inventory': document.getElementById('view-inventory'),
+                'create': document.getElementById('view-create'),
+                'gallery': document.getElementById('view-gallery')
+            };
+            const btnsDesk = {
+                'missions': document.getElementById('btn-tab-missions'),
+                'calendar': document.getElementById('btn-tab-calendar'),
+                'inventory': document.getElementById('btn-tab-inventory'),
+                'create': document.getElementById('btn-tab-create'),
+                'gallery': document.getElementById('btn-tab-gallery')
+            };
+            const btnsMob = {
+                'missions': document.getElementById('btn-mob-missions'),
+                'calendar': document.getElementById('btn-mob-calendar'),
+                'inventory': document.getElementById('btn-mob-inventory'),
+                'create': document.getElementById('btn-mob-create'),
+                'gallery': document.getElementById('btn-mob-gallery')
+            };
+
+            const inactiveDesk = "px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition-all";
+            const activeDesk = "px-4 py-1.5 rounded-md text-sm font-medium bg-gray-700 text-white shadow transition-all";
+
+            const inactiveMob = "flex-1 flex flex-col items-center justify-center text-gray-400 hover:text-cyan-400 transition-colors h-full";
+            const activeMob = "flex-1 flex flex-col items-center justify-center text-cyan-500 transition-colors h-full";
+
+            Object.keys(views).forEach(key => {
+                if (key === viewName) {
+                    views[key].classList.remove('hidden');
+                    if (btnsDesk[key]) btnsDesk[key].className = activeDesk;
+                    if (btnsMob[key]) btnsMob[key].className = activeMob;
+                } else {
+                    views[key].classList.add('hidden');
+                    if (btnsDesk[key]) btnsDesk[key].className = inactiveDesk;
+                    if (btnsMob[key]) btnsMob[key].className = inactiveMob;
+                }
+            });
+
+            if (viewName === 'calendar' && window.calendarInstance) {
+                setTimeout(() => window.calendarInstance.render(), 100);
+            }
+        };
+
+        window.deleteCurrentOrder = () => {
+            if (!currentBookingId) return;
+            const booking = allBookings.find(b => b.id === currentBookingId);
+            const label = booking ? `${booking.customer?.name || 'Unknown'} — ${booking.date || booking.event_date || '?'}` : currentBookingId;
+            document.getElementById('delete-confirm-label').textContent = label;
+            document.getElementById('delete-confirm-modal').classList.remove('hidden');
+            document.getElementById('delete-confirm-modal').classList.add('flex');
+        };
+
+        window.confirmDeleteOrder = async () => {
+            document.getElementById('delete-confirm-modal').classList.add('hidden');
+            document.getElementById('delete-confirm-modal').classList.remove('flex');
+            if (!currentBookingId) return;
+            try {
+                const headers = await getAuthHeaders();
+                const resp = await fetch(CLOUD_FN_URLS.ADMIN_OPS, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({ action: 'delete_booking', booking_id: currentBookingId })
+                });
+                const result = await resp.json();
+                if (!resp.ok) {
+                    showToast(result.error || 'Failed to delete order.', 'error');
+                    return;
+                }
+                document.getElementById('detail-panel').classList.add('hidden');
+                document.getElementById('empty-detail-state').classList.remove('hidden');
+                allBookings = allBookings.filter(b => b.id !== currentBookingId);
+                currentBookingId = null;
+                applyFilters();
+                updateCalendarEvents();
+                showToast('Order deleted.', 'success');
+            } catch (e) {
+                console.error(e);
+                showToast('Error deleting order: ' + e.message, 'error');
+            }
+        };
+
+        // #region ── Gallery Management ──
+
+        const GALLERY_CATEGORIES = {
+            'soft-play-setups': 'Soft Play Setups',
+            'cake-toppers': 'Cake Toppers',
+            'centerpieces-decor': 'Centerpieces & Decor',
+            'party-favors': 'Party Favors',
+            'welcome-signs': 'Welcome Signs',
+            'big-heads': 'Big Heads'
+        };
+
+        let galleryPhotos = [];
+
+        // File input preview
+        document.getElementById('gallery-file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const preview = document.getElementById('gallery-preview');
+            const previewImg = document.getElementById('gallery-preview-img');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    previewImg.src = ev.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.classList.add('hidden');
+            }
+        });
+
+        function resizeImage(file, maxWidth, quality) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > maxWidth) {
+                            h = Math.round(h * (maxWidth / w));
+                            w = maxWidth;
+                        }
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        canvas.toBlob((blob) => resolve(blob), 'image/jpeg', quality);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        window.uploadGalleryPhoto = async () => {
+            const fileInput = document.getElementById('gallery-file-input');
+            const category = document.getElementById('gallery-category').value;
+            const caption = document.getElementById('gallery-caption').value.trim();
+            const btn = document.getElementById('btn-gallery-upload');
+
+            if (!fileInput.files[0]) {
+                showToast('Please select a photo file.', 'error');
+                return;
+            }
+
+            // Client-side file size check (5MB limit)
+            if (fileInput.files[0].size > 5 * 1024 * 1024) {
+                showToast('File too large. Maximum size is 5MB.', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+
+            try {
+                const resizedBlob = await resizeImage(fileInput.files[0], 1200, 0.85);
+                const timestamp = Date.now();
+                const filename = category + '-' + timestamp + '.jpg';
+                const path = 'gallery/' + filename;
+
+                const fileRef = storageRef(storage, path);
+                await uploadBytes(fileRef, resizedBlob, { contentType: 'image/jpeg' });
+                const photoUrl = await getDownloadURL(fileRef);
+
+                const maxOrder = galleryPhotos
+                    .filter(p => p.category === category)
+                    .reduce((max, p) => Math.max(max, p.order || 0), 0);
+
+                const headers = await getAuthHeaders();
+                const resp = await fetch(CLOUD_FN_URLS.ADMIN_OPS, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({
+                        action: 'upload_gallery',
+                        category: category,
+                        caption: caption,
+                        storage_path: path,
+                        photo_url: photoUrl,
+                        order: maxOrder + 1
+                    })
+                });
+                const result = await resp.json();
+                if (!resp.ok) {
+                    showToast(result.error || 'Failed to save gallery entry.', 'error');
+                    return;
+                }
+
+                fileInput.value = '';
+                document.getElementById('gallery-caption').value = '';
+                document.getElementById('gallery-preview').classList.add('hidden');
+                showToast('Photo uploaded successfully!', 'success');
+                await loadGallery();
+            } catch (e) {
+                console.error('Gallery upload error:', e);
+                showToast('Upload failed: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '';
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-cloud-upload-alt';
+                btn.appendChild(icon);
+                btn.appendChild(document.createTextNode(' Upload Photo'));
+            }
+        };
+
+        async function loadGallery() {
+            try {
+                const snapshot = await getDocs(query(collection(db, 'gallery'), orderBy('order', 'asc')));
+                galleryPhotos = [];
+                snapshot.forEach(docSnap => {
+                    galleryPhotos.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderGalleryGrid();
+            } catch (e) {
+                console.error('Failed to load gallery:', e);
+            }
+        }
+
+        window.renderGalleryGrid = () => {
+            const grid = document.getElementById('gallery-grid');
+            const emptyMsg = document.getElementById('gallery-empty');
+            const countEl = document.getElementById('gallery-count');
+            const filter = document.getElementById('gallery-filter').value;
+
+            while (grid.firstChild) grid.removeChild(grid.firstChild);
+
+            const filtered = filter === 'all'
+                ? galleryPhotos
+                : galleryPhotos.filter(p => p.category === filter);
+
+            countEl.textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                emptyMsg.classList.remove('hidden');
+                return;
+            }
+            emptyMsg.classList.add('hidden');
+
+            filtered.forEach(photo => {
+                const card = document.createElement('div');
+                card.className = 'bg-gray-800 border border-gray-700 rounded-xl overflow-hidden group';
+
+                const imgWrapper = document.createElement('div');
+                imgWrapper.className = 'relative';
+
+                const img = document.createElement('img');
+                img.src = photo.photo_url;
+                img.alt = photo.caption || 'Gallery photo';
+                img.className = 'w-full h-48 object-cover';
+                img.loading = 'lazy';
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'absolute top-2 right-2 bg-red-500 hover:bg-red-400 text-white w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg';
+                deleteBtn.title = 'Delete photo';
+                const trashIcon = document.createElement('i');
+                trashIcon.className = 'fas fa-trash-alt text-xs';
+                deleteBtn.appendChild(trashIcon);
+                deleteBtn.addEventListener('click', () => deleteGalleryPhoto(photo.id, photo.storage_path, photo.caption));
+
+                imgWrapper.appendChild(img);
+                imgWrapper.appendChild(deleteBtn);
+                card.appendChild(imgWrapper);
+
+                const info = document.createElement('div');
+                info.className = 'p-3';
+
+                const catBadge = document.createElement('span');
+                catBadge.className = 'text-xs bg-gray-700 text-cyan-400 px-2 py-0.5 rounded-full font-bold';
+                catBadge.textContent = GALLERY_CATEGORIES[photo.category] || photo.category;
+                info.appendChild(catBadge);
+
+                if (photo.caption) {
+                    const captionEl = document.createElement('p');
+                    captionEl.className = 'text-sm text-gray-400 mt-1 truncate';
+                    captionEl.textContent = photo.caption;
+                    info.appendChild(captionEl);
+                }
+
+                card.appendChild(info);
+                grid.appendChild(card);
+            });
+        };
+
+        function deleteGalleryPhoto(docId, storagePath, caption) {
+            window._pendingGalleryDeleteDocId = docId;
+            window._pendingGalleryDeleteStoragePath = storagePath;
+            document.getElementById('gallery-delete-label').textContent = caption || 'Untitled photo';
+            const modal = document.getElementById('gallery-delete-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        async function confirmGalleryDelete() {
+            const docId = window._pendingGalleryDeleteDocId;
+            const storagePath = window._pendingGalleryDeleteStoragePath;
+            window._pendingGalleryDeleteDocId = null;
+            window._pendingGalleryDeleteStoragePath = null;
+            const modal = document.getElementById('gallery-delete-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            if (!docId) return;
+            try {
+                const headers = await getAuthHeaders();
+                const resp = await fetch(CLOUD_FN_URLS.ADMIN_OPS, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({ action: 'delete_gallery', doc_id: docId })
+                });
+                const result = await resp.json();
+                if (!resp.ok) {
+                    showToast(result.error || 'Failed to delete photo.', 'error');
+                    return;
+                }
+                if (storagePath) {
+                    try { await deleteObject(storageRef(storage, storagePath)); }
+                    catch (e) { console.warn('Storage delete failed (may already be removed):', e); }
+                }
+                showToast('Photo deleted.', 'success');
+                await loadGallery();
+            } catch (e) {
+                console.error('Delete failed:', e);
+                showToast('Error deleting photo: ' + e.message, 'error');
+            }
+        }
+
+        // #endregion
+
+    </script>
+
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[200] flex flex-col gap-2 pointer-events-none"></div>
+</body>
+</html>

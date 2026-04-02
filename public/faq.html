@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Lola's Party | FAQ</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .script-font { font-family: 'Great Vibes', cursive; }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        .faq-item.open .faq-answer {
+            max-height: 400px;
+        }
+        .faq-item.open .faq-icon {
+            transform: rotate(45deg);
+        }
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-[#faf9f7] text-gray-700 flex flex-col min-h-screen">
+
+    <div id="navbar-container"></div>
+
+    <header class="bg-[#f3eef7] py-24 text-center px-6">
+        <h2 class="script-font text-4xl text-[#b39bc8] mb-4">got questions?</h2>
+        <h1 class="text-4xl font-semibold text-gray-900">Frequently Asked Questions</h1>
+        <p class="mt-6 text-gray-500 max-w-2xl mx-auto">Everything you need to know about booking, pricing, delivery, and party favors.</p>
+    </header>
+
+    <main id="main-content" class="flex-grow max-w-3xl mx-auto px-6 py-20 w-full">
+
+        <!-- PLACEHOLDER NOTICE -->
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-10 text-center">
+            <p class="text-amber-800 text-sm font-medium">
+                <i class="fas fa-info-circle mr-1"></i>
+                These FAQs are sample questions and answers for demonstration purposes. Official Q&amp;A coming soon.
+            </p>
+        </div>
+
+        <!-- BOOKING & RESERVATIONS -->
+        <section class="mb-12">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-[#a084ca] mb-6 flex items-center gap-2">
+                <i class="fas fa-calendar-check"></i> Booking &amp; Reservations
+            </h2>
+            <div class="space-y-3">
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">How far in advance should I book?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        We recommend booking at least 2–3 weeks in advance to secure your preferred date and time. Party favor orders placed less than 14 days before your event incur a $50 rush fee.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">How do I book an event?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Submit an inquiry through our <a href="inquire.html" class="text-[#a084ca] font-medium hover:underline">Book Now</a> page. We'll review your request, confirm availability, and send you a deposit link to lock in your date.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">What happens after I submit an inquiry?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Once we receive your inquiry, we'll confirm your date and send a deposit link (typically 50% of the total). A final balance link will be sent closer to your event date.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">Can I make changes to my booking after it's confirmed?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Yes! Contact us as soon as possible and we'll do our best to accommodate changes to your package, date, or add-ons.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- PRICING & PAYMENTS -->
+        <section class="mb-12">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-[#a084ca] mb-6 flex items-center gap-2">
+                <i class="fas fa-dollar-sign"></i> Pricing &amp; Payments
+            </h2>
+            <div class="space-y-3">
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">How much is the deposit?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        We typically require a 50% deposit to hold your date. The remaining balance is due before the event.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">Is there a delivery fee?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Delivery is free within 30 miles of Woodbridge, VA. Beyond 30 miles, an additional $1.25 per mile is charged. Your exact delivery fee is calculated automatically when you submit your inquiry.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">Is tax included in the quoted price?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        A 6% tax is applied at checkout. This is shown in your quote before you pay.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">Can I add extra rental hours?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Yes — extra hours are available at $30/hr. Add them when submitting your inquiry.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- DELIVERY & SETUP -->
+        <section class="mb-12">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-[#a084ca] mb-6 flex items-center gap-2">
+                <i class="fas fa-truck"></i> Delivery &amp; Setup
+            </h2>
+            <div class="space-y-3">
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">What areas do you serve?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        We serve the greater DC, Maryland, and Virginia (DMV) area, operating out of Woodbridge, VA. A mileage fee applies for locations more than 30 miles away.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">How long does setup take?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Setup typically takes 30–60 minutes depending on the package size. We factor this into your delivery window so everything is ready before your guests arrive.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">Do I need to prepare anything for the setup?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Just a clean, clear space! For indoor setups, please clear the area of furniture. For outdoor setups, a flat, grassy or paved area works best. We recommend a shaded spot for summer events.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">Can you set up outdoors?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Yes! We offer both indoor and outdoor setups. For outdoor events, we recommend a flat, shaded area and ask that you notify us if rain or extreme heat is expected so we can plan accordingly.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SOFT PLAY EQUIPMENT -->
+        <section class="mb-12">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-[#a084ca] mb-6 flex items-center gap-2">
+                <i class="fas fa-baby"></i> Soft Play Equipment
+            </h2>
+            <div class="space-y-3">
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">What age group is soft play designed for?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Our soft play equipment is designed for toddlers and young children, typically ages 0–5. It's safe, foam-based, and built for little ones to crawl, climb, and explore freely.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">Is the equipment sanitized between rentals?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Absolutely. Every piece of equipment is professionally sanitized and inspected after every single event. Your children's safety is our top priority.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">Are you licensed and insured?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Yes — Lola's Party Rentals is fully licensed and insured. We're happy to provide proof of insurance for venues that require it.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- PARTY FAVORS -->
+        <section class="mb-12">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-[#a084ca] mb-6 flex items-center gap-2">
+                <i class="fas fa-gift"></i> Party Favors
+            </h2>
+            <div class="space-y-3">
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">Do I need to book a soft play package to order party favors?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        No! Party favors are available as a completely standalone order. Browse our <a href="partyfavors.html" class="text-[#a084ca] font-medium hover:underline">Party Favors</a> page and order anytime.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">Can I customize the party favors?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Yes — all party favors are customized just for you. During checkout you'll provide your child's name, age, exact wording, theme, and color palette. Custom items are non-refundable once printing begins, so please double-check all details.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">How early should I order party favors?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        We recommend ordering at least 14 days before your event. Orders placed within 14 days incur a $50 rush fee to prioritize production.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">Is delivery available for party favors?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Party favors are currently local pickup only. After your order is confirmed, we'll reach out to coordinate a convenient pickup time.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- POLICIES -->
+        <section class="mb-12">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-[#a084ca] mb-6 flex items-center gap-2">
+                <i class="fas fa-file-alt"></i> Policies
+            </h2>
+            <div class="space-y-3">
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">What is your cancellation policy?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Deposits are non-refundable if cancelled within 7 days of your event. If you need to reschedule, contact us as soon as possible and we'll do our best to find a new date.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">What happens if it rains on my event day?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        We work with you to reschedule at no penalty for weather-related issues. Please notify us as early as possible — ideally 48 hours before — so we can adjust our schedule.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white rounded-2xl border border-[#efe7f5] shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-5 text-left" onclick="toggleFaq(this)">
+                        <span class="font-semibold text-gray-800 pr-4">Are custom party favor orders refundable?</span>
+                        <i class="faq-icon fas fa-plus text-[#a084ca] shrink-0 text-sm"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                        Custom items are non-refundable once production begins. Please review all spelling, names, and details carefully at checkout — we print exactly what you submit.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Still have questions CTA -->
+        <div class="bg-[#f3eef7] rounded-3xl p-8 text-center">
+            <p class="text-lg font-semibold text-gray-900 mb-2">Still have questions?</p>
+            <p class="text-sm text-gray-500 mb-6">We're happy to help — reach out and we'll get back to you shortly.</p>
+            <a href="mailto:your-business-email@example.com"
+                class="inline-block bg-[#a084ca] text-white px-8 py-3 rounded-full hover:bg-[#8f6bbf] transition shadow-md font-medium">
+                Contact Us
+            </a>
+        </div>
+
+    </main>
+
+    <footer class="py-10 text-center text-sm text-gray-400">
+        &copy; 2026 Lola's Party &bull; Licensed &amp; Insured
+    </footer>
+
+    <script>
+        function toggleFaq(btn) {
+            const item = btn.closest('.faq-item');
+            item.classList.toggle('open');
+        }
+    </script>
+    <script src="navbar.js"></script>
+</body>
+</html>

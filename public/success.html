@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful! | Lola's Party</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .script-font { font-family: 'Great Vibes', cursive; }
+    </style>
+</head>
+
+<body class="bg-[#faf9f7] text-gray-700 flex flex-col min-h-screen">
+
+<div id="navbar-container"></div>
+
+<main class="flex-grow flex items-center justify-center px-4 py-16">
+    <div class="bg-white p-10 rounded-[32px] shadow-lg max-w-md w-full text-center border border-[#efe7f5]">
+
+        <div class="w-20 h-20 bg-[#f3eef7] rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-[#a084ca]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+
+        <h2 class="script-font text-3xl text-[#b39bc8] mb-2" id="success-subtitle">congratulations</h2>
+        <h1 class="text-3xl font-semibold text-gray-900 mb-3" id="success-title">Deposit Received!</h1>
+        <p class="text-gray-500 mb-6" id="success-message">
+            Your deposit has been received. Your date is now officially reserved.
+        </p>
+
+        <div class="bg-[#f9f6fc] rounded-xl p-4 mb-6 text-sm text-gray-600" id="success-note">
+            <p class="mb-2" id="success-note-1"><strong>Note:</strong> We will reach out with a design mockup at least 2 weeks before your event.</p>
+            <p id="success-note-2">A confirmation email is on its way to you right now.</p>
+        </div>
+
+        <a href="index.html"
+           class="block w-full bg-[#a084ca] hover:bg-[#8f6bbf] text-white font-semibold py-3 rounded-full transition-all shadow-sm hover:shadow-md">
+            Return Home
+        </a>
+    </div>
+</main>
+
+<footer class="py-10 text-center text-sm text-gray-400">
+    &copy; 2026 Lola's Party &bull; Licensed &amp; Insured
+</footer>
+
+<script>
+// Detect payment type from URL params to show appropriate messaging
+(function() {
+    const params = new URLSearchParams(window.location.search);
+    const type = (params.get('type') || '').toLowerCase();
+    const subtitle = document.getElementById('success-subtitle');
+    const title = document.getElementById('success-title');
+    const message = document.getElementById('success-message');
+    const note1 = document.getElementById('success-note-1');
+    const note2 = document.getElementById('success-note-2');
+
+    if (type === 'full') {
+        // Full upfront payment
+        title.textContent = "You're Booked!";
+        message.textContent = 'We have received your payment. Your date is now officially reserved on our calendar.';
+    } else if (type === 'final_balance' || type === 'final-balance') {
+        // Final balance paid
+        subtitle.textContent = 'all set!';
+        title.textContent = 'Paid in Full!';
+        message.textContent = "Your final balance has been received. You\u2019re all set! We\u2019ll begin event prep and reach out with your design mockup.";
+        if (note1) note1.textContent = 'Thank you for choosing Lola\u2019s Party!';
+        if (note2) note2.textContent = 'A confirmation email is on its way to you right now.';
+    } else if (type === 'ecommerce' || type === 'party_favors') {
+        // Party favors e-commerce
+        localStorage.removeItem('party_cart');
+        subtitle.textContent = 'order confirmed!';
+        title.textContent = 'Thank You!';
+        message.textContent = "Your party favor order has been received. A confirmation email is on its way. We\u2019ll reach out to coordinate pickup.";
+        if (note1) note1.textContent = 'Note: If you need to send reference photos, email them to your-business-email@example.com with your order details.';
+        if (note2) note2.textContent = '';
+    }
+    // Default (deposit) messaging is already in the HTML
+})();
+</script>
+
+<script src="navbar.js"></script>
+
+</body>
+</html>

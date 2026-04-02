@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Lola's Party | Party Favors</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .script-font { font-family: 'Great Vibes', cursive; }
+
+        /* Custom scrollbar for the cart & step overlay */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a084ca; }
+
+        /* Step overlay slide animations */
+        #step-viewport { position: relative; }
+        #step-viewport > div { transition: transform 0.3s ease-in-out; }
+    </style>
+</head>
+
+<body class="bg-[#faf9f7] text-gray-700 flex flex-col min-h-screen">
+
+    <div id="navbar-container"></div>
+
+    <header class="bg-[#f3eef7] py-24 text-center px-6">
+        <h2 class="script-font text-4xl text-[#b39bc8] mb-4">details & decor</h2>
+        <h1 class="text-4xl font-semibold text-gray-900">Party Favors</h1>
+        <p class="mt-6 text-gray-500 max-w-2xl mx-auto">Custom add-ons designed to elevate your celebration.</p>
+        <p class="mt-2 text-sm text-[#a084ca] font-semibold"><i class="fas fa-box-open mr-1"></i> Local Pickup Only &bull; Food &amp; drinks are purchased and included for applicable items (e.g. chip bags, drink pouches, Capri-Sun tags)</p>
+    </header>
+
+    <main id="main-content" class="flex-grow max-w-6xl mx-auto px-6 py-20 w-full">
+        <div id="loading-spinner" class="flex justify-center items-center py-20">
+            <div class="w-10 h-10 border-4 border-gray-200 border-t-[#a084ca] rounded-full animate-spin"></div>
+        </div>
+        <div id="party-favors-grid" class="grid md:grid-cols-3 gap-12"></div>
+    </main>
+
+    <footer class="py-10 text-center text-sm text-gray-400">
+        &copy; 2026 Lola's Party &bull; Licensed & Insured
+    </footer>
+
+    <!-- Floating cart button -->
+    <div id="cart-button" class="fixed bottom-6 right-6 bg-[#a084ca] text-white p-4 px-6 rounded-full shadow-2xl cursor-pointer hover:bg-[#8f6bbf] transition z-40 flex items-center gap-3 hidden" onclick="toggleCart()">
+        <i class="fas fa-shopping-cart text-xl"></i>
+        <span id="cart-count" class="font-bold text-lg">0</span>
+    </div>
+
+    <!-- Cart overlay (backdrop) -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black bg-opacity-40 z-40 hidden transition-opacity" onclick="toggleCart()"></div>
+
+    <!-- Cart sidebar (simplified — no inline customization) -->
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full md:w-[400px] bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-[#f3eef7]">
+            <h2 class="text-2xl font-bold text-gray-800"><i class="fas fa-shopping-bag mr-2 text-[#a084ca]"></i> Your Cart</h2>
+            <button onclick="toggleCart()" class="text-gray-500 hover:text-gray-800"><i class="fas fa-times text-2xl"></i></button>
+        </div>
+
+        <div id="cart-items" class="flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar"></div>
+
+        <div class="p-6 border-t border-gray-100 bg-gray-50">
+            <div class="flex justify-between text-lg font-bold text-gray-800 mb-4">
+                <span>Subtotal</span>
+                <span id="cart-subtotal">$0.00</span>
+            </div>
+            <button onclick="clearCart()" class="w-full text-gray-400 hover:text-red-400 text-sm font-medium py-2 transition-colors">
+                <i class="fas fa-trash-alt mr-1"></i> Clear Cart
+            </button>
+            <button onclick="openStepFlow()" class="w-full bg-[#a084ca] text-white py-4 rounded-full hover:bg-[#8f6bbf] transition font-bold text-lg shadow-lg flex items-center justify-center gap-2">
+                Customize &amp; Order <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Full-screen guided step overlay -->
+    <div id="step-overlay" class="fixed inset-0 bg-[#faf9f7] z-50 hidden flex-col">
+
+        <!-- Top bar -->
+        <div class="shrink-0 bg-white border-b border-gray-100 shadow-sm">
+            <div class="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+                <button onclick="closeStepFlow()" class="text-sm text-gray-500 hover:text-[#a084ca] transition flex items-center gap-1 whitespace-nowrap">
+                    <i class="fas fa-arrow-left"></i> Back to Cart
+                </button>
+                <div id="step-label" class="text-sm font-bold text-gray-700 text-center flex-1"></div>
+                <div id="step-dots" class="flex items-center gap-1.5 shrink-0"></div>
+            </div>
+        </div>
+
+        <!-- Sliding content viewport -->
+        <div id="step-viewport" class="flex-grow overflow-hidden relative">
+            <div id="step-content" class="absolute inset-0 overflow-y-auto custom-scrollbar px-6 py-8">
+                <!-- rendered by JS -->
+            </div>
+        </div>
+
+        <!-- Bottom navigation -->
+        <div class="shrink-0 bg-white border-t border-gray-100 shadow-sm">
+            <div class="max-w-2xl mx-auto px-6 py-4 flex items-center gap-3">
+                <button id="step-btn-back" onclick="prevStep()"
+                    class="flex items-center gap-2 text-sm text-gray-500 hover:text-[#a084ca] border border-gray-200 rounded-full px-4 py-2.5 transition"
+                    style="display:none">
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button id="step-btn-next" onclick="nextStep()"
+                    class="flex-1 bg-[#a084ca] text-white py-3 rounded-full hover:bg-[#8f6bbf] transition font-bold text-sm shadow flex items-center justify-center gap-2">
+                    Save &amp; Next Item <i class="fas fa-arrow-right"></i>
+                </button>
+                <button id="btn-stripe-pay" onclick="processCheckout()"
+                    class="flex-1 bg-gray-900 text-white py-3 rounded-full hover:bg-gray-800 transition font-bold text-sm shadow flex items-center justify-center gap-2"
+                    style="display:none">
+                    Pay Securely via Stripe <i class="fab fa-cc-stripe text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="utils.js"></script>
+    <script src="firebase-init.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // Firebase Storage removed — photo collection handled via email post-checkout
+
+        let db;
+
+        function escapeAttr(str) {
+            return window.escapeHtml(str).replace(/'/g, '&#39;');
+        }
+
+        const iconMap = {
+            "Custom Chip Bags": "🍿", "Centerpiece Decor": "🌸", "3D Gable Boxes": "🎁",
+            "Welcome Sign w/ Easel Rental": "🪧", "Koozy Holders": "🥤", "Itineraries and Invitations": "✉️",
+            "Cupcake Toppers": "🧁", "Drink Pouches with Custom Logos": "🧃", "12-Month Banner": "🗓️",
+            "Big heads (x5)": "😄", "Custom Caprisun tags": "🧃", "Personalization": "✨",
+            "Custom Cake Toppers": "🎂", "Vinyl Decal (Softplay)": "🧷"
+        };
+
+        // Cart shape: { id, name, price, qty, childName, childAge, exactText, theme, colorPalette, primaryColorHex, characters, refPhotoUrl, notes }
+        let cart = JSON.parse(localStorage.getItem('party_cart')) || [];
+
+        // ─── Step flow state ──────────────────────────────────────────────────────
+        let currentStep = 0;
+        let finalStepData = { date: '', type: '', link: '', name: '', phone: '', email: '' };
+
+        // ─── Cart sidebar ─────────────────────────────────────────────────────────
+
+        window.toggleCart = () => {
+            document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
+            document.getElementById('cart-overlay').classList.toggle('hidden');
+        };
+
+        window.addToCart = (id, name, price) => {
+            const existing = cart.find(i => i.id === id);
+            if (existing) { existing.qty += 1; }
+            else { cart.push({ id, name, price, qty: 1, childName: '', childAge: '', exactText: '', theme: '', colorPalette: '', primaryColorHex: '', characters: '', refPhotoUrl: '', notes: '' }); }
+
+            localStorage.setItem('party_cart', JSON.stringify(cart));
+            updateCartUI();
+
+            document.getElementById('cart-sidebar').classList.remove('translate-x-full');
+            document.getElementById('cart-overlay').classList.remove('hidden');
+        };
+
+        window.removeFromCart = (id) => {
+            cart = cart.filter(i => i.id !== id);
+            localStorage.setItem('party_cart', JSON.stringify(cart));
+            updateCartUI();
+        };
+
+        window.updateCartQty = (id, newQty) => {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty = Math.max(1, parseInt(newQty) || 1);
+                localStorage.setItem('party_cart', JSON.stringify(cart));
+                updateCartUI();
+            }
+        };
+
+        function clearCart() {
+            if (!confirm('Clear all items from your cart?')) return;
+            localStorage.removeItem('party_cart');
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-count').innerText = count;
+
+            if (count > 0) document.getElementById('cart-button').classList.remove('hidden');
+            else document.getElementById('cart-button').classList.add('hidden');
+
+            const container = document.getElementById('cart-items');
+            container.innerHTML = '';
+            let subtotal = 0;
+
+            if (cart.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-center mt-10">Your cart is empty.</p>';
+            }
+
+            cart.forEach(item => {
+                subtotal += item.price * item.qty;
+                const lineTotal = (item.price * item.qty).toFixed(2);
+                const isCustomized = item.childName && item.childAge && item.exactText && item.theme && item.colorPalette;
+                const thumb = (photoStore[item.id] && photoStore[item.id][0]) || '';
+
+                const safeId = escapeAttr(item.id);
+                const safeThumb = escapeAttr(thumb);
+                container.innerHTML += `
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-3">
+                        <div class="flex items-center gap-3">
+                            ${thumb
+                                ? `<img src="${safeThumb}" alt="${escapeHtml(item.name)}" class="w-10 h-10 rounded-xl object-cover shrink-0">`
+                                : `<div class="w-10 h-10 rounded-xl bg-[#f3eef7] flex items-center justify-center text-xl shrink-0">${iconMap[item.name] || '✨'}</div>`}
+                            <div class="flex-1 min-w-0">
+                                <div class="font-semibold text-sm text-gray-800 truncate">${escapeHtml(item.name)}</div>
+                                <div class="text-xs text-gray-500 mt-0.5">
+                                    Qty: <input type="number" min="1" value="${item.qty}"
+                                        onchange="updateCartQty('${safeId}', this.value)"
+                                        class="w-12 text-center border border-gray-200 rounded-lg p-0.5 text-xs focus:border-[#a084ca] outline-none">
+                                    &times; $${item.price.toFixed(2)} = <strong class="text-gray-800">$${lineTotal}</strong>
+                                </div>
+                            </div>
+                            <button onclick="removeFromCart('${safeId}')" class="text-gray-300 hover:text-red-400 transition p-1 shrink-0"><i class="fas fa-trash text-sm"></i></button>
+                        </div>
+                        <div class="text-xs px-1 ${isCustomized ? 'text-green-600' : 'text-amber-500'} flex items-center gap-1">
+                            ${isCustomized
+                                ? '<i class="fas fa-check-circle"></i> Details filled in'
+                                : '<i class="fas fa-pencil-alt"></i> Details needed at checkout'}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('cart-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+        }
+
+        // ─── Step flow open / close ───────────────────────────────────────────────
+
+        window.openStepFlow = () => {
+            if (cart.length === 0) return;
+            currentStep = 0;
+            // Hide cart, show overlay
+            document.getElementById('cart-sidebar').classList.add('translate-x-full');
+            document.getElementById('cart-overlay').classList.add('hidden');
+            document.getElementById('step-overlay').classList.remove('hidden');
+            document.getElementById('step-overlay').classList.add('flex');
+            renderStep(currentStep);
+        };
+
+        window.closeStepFlow = () => {
+            document.getElementById('step-overlay').classList.add('hidden');
+            document.getElementById('step-overlay').classList.remove('flex');
+            document.getElementById('cart-sidebar').classList.remove('translate-x-full');
+            document.getElementById('cart-overlay').classList.remove('hidden');
+        };
+
+        // ─── Step state save ──────────────────────────────────────────────────────
+
+        function saveCurrentStepData() {
+            if (currentStep >= cart.length) return;
+            const item = cart[currentStep];
+            const get = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+            item.childName    = get('step-childName');
+            item.childAge     = get('step-childAge');
+            item.exactText    = get('step-exactText');
+            item.theme        = get('step-theme');
+            item.colorPalette    = get('step-colorPalette');
+            item.primaryColorHex = get('step-primaryColorHex');
+            item.characters      = get('step-characters');
+            item.notes        = get('step-notes');
+            localStorage.setItem('party_cart', JSON.stringify(cart));
+        }
+
+        function saveFinalStepData() {
+            const get = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+            finalStepData = {
+                date:  get('cust-date'),
+                type:  get('cust-type'),
+                link:  get('cust-link'),
+                name:  get('cust-name'),
+                phone: get('cust-phone'),
+                email: get('cust-email')
+            };
+        }
+
+        // ─── Navigation ───────────────────────────────────────────────────────────
+
+        window.nextStep = () => {
+            if (currentStep < cart.length) {
+                // Validate required fields on item steps
+                const reqIds = ['step-childName', 'step-childAge', 'step-exactText', 'step-theme', 'step-colorPalette'];
+                const anyMissing = reqIds.some(id => !document.getElementById(id)?.value.trim());
+                if (anyMissing) {
+                    reqIds.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el && !el.value.trim()) {
+                            el.classList.add('border-red-400', 'bg-red-50');
+                            el.addEventListener('input', () => el.classList.remove('border-red-400', 'bg-red-50'), { once: true });
+                        }
+                    });
+                    document.getElementById('step-content').scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+                saveCurrentStepData();
+            }
+            currentStep++;
+            slideToStep(currentStep, 'forward');
+        };
+
+        window.prevStep = () => {
+            if (currentStep < cart.length) { saveCurrentStepData(); }
+            else if (currentStep === cart.length) { saveFinalStepData(); }
+            currentStep--;
+            slideToStep(currentStep, 'backward');
+        };
+
+        // ─── Slide animation ──────────────────────────────────────────────────────
+
+        function slideToStep(stepIndex, direction) {
+            const viewport  = document.getElementById('step-viewport');
+            const oldSlide  = document.getElementById('step-content');
+            const newSlide  = document.createElement('div');
+
+            newSlide.className = 'absolute inset-0 overflow-y-auto custom-scrollbar px-6 py-8';
+            newSlide.innerHTML  = buildStepHTML(stepIndex);
+
+            const fromX = direction === 'forward' ? 'translateX(100%)' : 'translateX(-100%)';
+            const exitX = direction === 'forward' ? 'translateX(-100%)' : 'translateX(100%)';
+
+            newSlide.style.transform = fromX;
+            viewport.appendChild(newSlide);
+
+            // Force reflow so the initial position is painted before transition starts
+            newSlide.getBoundingClientRect();
+
+            oldSlide.style.transition = 'transform 0.3s ease-in-out';
+            newSlide.style.transition = 'transform 0.3s ease-in-out';
+
+            requestAnimationFrame(() => {
+                oldSlide.style.transform = exitX;
+                newSlide.style.transform = 'translateX(0)';
+            });
+
+            setTimeout(() => {
+                oldSlide.remove();
+                newSlide.id = 'step-content';
+                updateStepNav();
+                updateStepDots();
+                updateStepLabel();
+            }, 320);
+
+            // Update header immediately so it feels snappy
+            updateStepDots();
+            updateStepLabel();
+        }
+
+        function renderStep(stepIndex) {
+            document.getElementById('step-content').innerHTML = buildStepHTML(stepIndex);
+            updateStepNav();
+            updateStepDots();
+            updateStepLabel();
+        }
+
+        // ─── Step rendering ───────────────────────────────────────────────────────
+
+        function buildStepHTML(stepIndex) {
+            return stepIndex < cart.length
+                ? buildItemStepHTML(cart[stepIndex], stepIndex)
+                : buildFinalStepHTML();
+        }
+
+        function buildItemStepHTML(item, stepIndex) {
+            const icon = iconMap[item.name] || '✨';
+            const lineTotal = (item.price * item.qty).toFixed(2);
+            const photos = photoStore[item.id] || [];
+            const hasPhotos = photos.length > 0;
+            const safeItemId = escapeAttr(item.id);
+            const safeName = escapeAttr(item.name);
+
+            // ── Desktop left panel: sticky hero photo + thumbnail strip ──────────
+            const desktopPhotoPanel = hasPhotos ? `
+                <div class="hidden md:block md:w-72 md:shrink-0 md:sticky md:top-0 md:self-start">
+                    <div class="rounded-2xl overflow-hidden h-64 bg-[#f3eef7] relative group cursor-pointer"
+                         onclick="openLightbox('${safeItemId}', 0)">
+                        <img src="${escapeAttr(photos[0])}" alt="${safeName}"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center pointer-events-none">
+                            <i class="fas fa-expand-alt text-white text-xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i>
+                        </div>
+                    </div>
+                    ${photos.length > 1 ? `
+                    <div class="flex flex-wrap gap-2 mt-3">
+                        ${photos.map((url, i) => `
+                            <img src="${escapeAttr(url)}" alt=""
+                                 onclick="openLightbox('${safeItemId}', ${i})"
+                                 class="w-14 h-14 object-cover rounded-xl cursor-pointer border-2 transition-colors ${i === 0 ? 'border-[#a084ca]' : 'border-transparent hover:border-[#a084ca]'}">`
+                        ).join('')}
+                    </div>` : ''}
+                </div>
+            ` : `
+                <div class="hidden md:flex md:w-72 md:shrink-0 md:sticky md:top-0 md:self-start md:h-64 md:rounded-2xl md:bg-[#f3eef7] md:items-center md:justify-center md:text-6xl">${icon}</div>
+            `;
+
+            // ── Mobile thumbnail: replaces emoji in item header ──────────────────
+            const mobileThumb = hasPhotos ? `
+                <div class="w-14 h-14 rounded-2xl overflow-hidden cursor-pointer relative group shrink-0 md:hidden"
+                     onclick="openLightbox('${safeItemId}', 0)">
+                    <img src="${escapeAttr(photos[0])}" alt="${safeName}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+                        <i class="fas fa-expand-alt text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </div>
+                </div>
+            ` : `<div class="w-14 h-14 rounded-2xl bg-[#f3eef7] flex items-center justify-center text-3xl shrink-0 md:hidden">${icon}</div>`;
+
+            return `
+                <div class="max-w-4xl mx-auto md:flex md:gap-8 md:items-start">
+
+                    ${desktopPhotoPanel}
+
+                    <!-- Right column: item header + form fields -->
+                    <div class="flex-1 min-w-0 space-y-6">
+
+                        <!-- Item header -->
+                        <div class="flex items-center gap-4 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                            ${mobileThumb}
+                            <div class="flex-1 min-w-0">
+                                <div class="font-bold text-gray-900">${escapeHtml(item.name)}</div>
+                                <div class="text-sm text-gray-500 mt-0.5">
+                                    Qty: <input type="number" id="step-qty-${stepIndex}" min="1" value="${item.qty}"
+                                        onchange="updateCartQtyInStep(${stepIndex}, this.value)"
+                                        class="w-14 text-center border border-gray-200 rounded-lg px-1 py-0.5 text-sm focus:border-[#a084ca] outline-none">
+                                    &times; $${item.price.toFixed(2)} = <strong>$${lineTotal}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Required details -->
+                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 space-y-4">
+                            <h3 class="font-bold text-gray-800 text-sm uppercase tracking-wide text-[#a084ca]">
+                                <i class="fas fa-star mr-1"></i> Required Details
+                            </h3>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-600 mb-1">Child's Name *</label>
+                                    <input type="text" id="step-childName" value="${item.childName || ''}"
+                                        placeholder="e.g. Sofia"
+                                        class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-600 mb-1">Child's Age *</label>
+                                    <input type="text" id="step-childAge" value="${item.childAge || ''}"
+                                        placeholder="e.g. 5"
+                                        class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] text-sm">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Exact Text / Wording to Print *</label>
+                                <textarea id="step-exactText" rows="2"
+                                    placeholder="e.g. Sofia's 5th Birthday Safari Adventure"
+                                    class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] text-sm resize-none">${item.exactText || ''}</textarea>
+                                <p class="text-[10px] text-gray-400 mt-1">This is printed exactly as typed — double-check spelling.</p>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-600 mb-1">Theme *</label>
+                                    <input type="text" id="step-theme" value="${item.theme || ''}"
+                                        placeholder="e.g. Safari, Princess"
+                                        class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-600 mb-1">Color Palette *</label>
+                                    <div class="relative">
+                                        <input type="text" id="step-colorPalette" value="${item.colorPalette || ''}"
+                                            placeholder="e.g. Pink & Gold"
+                                            class="w-full p-3 pr-12 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] text-sm">
+                                        <label class="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer" title="Pick exact color">
+                                            <input type="color" id="step-primaryColorHex" value="${item.primaryColorHex || '#a084ca'}"
+                                                class="w-7 h-7 rounded-full border-2 border-gray-200 cursor-pointer p-0 overflow-hidden"
+                                                style="-webkit-appearance: none; appearance: none; background: none;">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Optional details -->
+                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 space-y-4">
+                            <h3 class="font-bold text-gray-800 text-sm uppercase tracking-wide text-gray-400">
+                                Optional Details
+                            </h3>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Characters / Logos</label>
+                                <input type="text" id="step-characters" value="${item.characters || ''}"
+                                    placeholder="e.g. Simba & Nala, or leave blank"
+                                    class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Additional Notes</label>
+                                <textarea id="step-notes" rows="2"
+                                    placeholder="Any other details or special requests..."
+                                    class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] text-sm resize-none">${item.notes || ''}</textarea>
+                            </div>
+                        </div>
+
+                    </div><!-- end right column -->
+                </div>
+            `;
+        }
+
+        function buildFinalStepHTML() {
+            // Build order summary rows
+            let subtotal = 0;
+            let summaryRows = '';
+            cart.forEach(item => {
+                const line = item.price * item.qty;
+                subtotal += line;
+                const icon = iconMap[item.name] || '✨';
+                summaryRows += `
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="flex items-center gap-2 text-gray-700">
+                            <span>${icon}</span>
+                            <span>${item.qty}&times; ${item.name}</span>
+                        </span>
+                        <span class="font-semibold text-gray-800">$${line.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+
+            const minDate = getMinDate();
+
+            return `
+                <div class="max-w-2xl mx-auto space-y-6">
+
+                    <!-- Order summary -->
+                    <div class="bg-[#f3eef7] rounded-2xl p-5 space-y-3">
+                        <h3 class="font-bold text-gray-800 text-sm uppercase tracking-wide text-[#a084ca]">
+                            <i class="fas fa-receipt mr-1"></i> Order Summary
+                        </h3>
+                        ${summaryRows}
+                        <div class="flex justify-between font-bold text-gray-900 pt-2 border-t border-[#d8cce6]">
+                            <span>Subtotal</span>
+                            <span>$${subtotal.toFixed(2)}</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500">Tax (6%) and any rush fees will be calculated at checkout.</p>
+                    </div>
+
+                    <!-- Pickup date & event type -->
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 space-y-4">
+                        <h3 class="font-bold text-gray-800 text-sm uppercase tracking-wide text-[#a084ca]">
+                            <i class="fas fa-calendar-alt mr-1"></i> Event Info
+                        </h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Target Pickup Date *</label>
+                                <input type="date" id="cust-date" min="${minDate}"
+                                    value="${finalStepData.date}"
+                                    class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] text-sm">
+                                <p class="text-[10px] text-gray-400 mt-1 leading-tight">Dates under 14 days incur a $50 Rush Fee.</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Event Type *</label>
+                                <select id="cust-type"
+                                    class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] bg-white text-sm">
+                                    <option value="">Select Event...</option>
+                                    <option value="Birthday" ${finalStepData.type === 'Birthday' ? 'selected' : ''}>Birthday Party</option>
+                                    <option value="Baby Shower" ${finalStepData.type === 'Baby Shower' ? 'selected' : ''}>Baby Shower</option>
+                                    <option value="Gender Reveal" ${finalStepData.type === 'Gender Reveal' ? 'selected' : ''}>Gender Reveal</option>
+                                    <option value="Graduation" ${finalStepData.type === 'Graduation' ? 'selected' : ''}>Graduation</option>
+                                    <option value="Other" ${finalStepData.type === 'Other' ? 'selected' : ''}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">
+                                <i class="fab fa-pinterest text-red-500 mr-1"></i> Inspiration Link (Overall Vibe)
+                            </label>
+                            <input type="url" id="cust-link" value="${finalStepData.link}"
+                                placeholder="Paste Pinterest/Etsy link for overall party style..."
+                                class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Photo email CTA -->
+                    <div class="bg-[#f3eef7] rounded-xl p-4 flex gap-3 items-start border border-[#e0d4f0]">
+                        <i class="fas fa-camera text-[#a084ca] text-lg mt-0.5 shrink-0"></i>
+                        <div>
+                            <p class="text-sm font-bold text-gray-800">Need to send reference photos?</p>
+                            <p class="text-xs text-gray-600 mt-1 leading-relaxed">
+                                After checkout, email your photos to
+                                <span class="font-semibold text-[#a084ca]">your-business-email@example.com</span>.
+                                Use your <strong>Order ID as the subject line</strong> — it will be in your confirmation email.
+                            </p>
+                            <p class="text-[10px] text-gray-400 mt-1.5 italic">Required for Big Heads and custom logo designs.</p>
+                        </div>
+                    </div>
+
+                    <!-- Contact info -->
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 space-y-4">
+                        <h3 class="font-bold text-gray-800 text-sm uppercase tracking-wide text-[#a084ca]">
+                            <i class="fas fa-user mr-1"></i> Your Contact Info
+                        </h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Full Name *</label>
+                                <input type="text" id="cust-name" value="${finalStepData.name}"
+                                    placeholder="Your Full Name"
+                                    class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Phone Number *</label>
+                                <input type="text" id="cust-phone" value="${finalStepData.phone}"
+                                    placeholder="(555) 000-0000"
+                                    class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Email Address *</label>
+                            <input type="email" id="cust-email" value="${finalStepData.email}"
+                                placeholder="you@example.com"
+                                class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-[#a084ca] text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Confirmation -->
+                    <label class="flex items-start gap-3 cursor-pointer bg-red-50 p-4 rounded-2xl border border-red-100">
+                        <input type="checkbox" id="cust-confirm" class="mt-0.5 w-5 h-5 accent-[#a084ca] cursor-pointer shrink-0">
+                        <span class="text-xs text-red-800 font-medium leading-relaxed">
+                            I confirm that all spelling, ages, and details provided above are correct.
+                            I understand custom items are non-refundable once printing begins.
+                        </span>
+                    </label>
+
+                    <div class="h-4"></div>
+                </div>
+            `;
+        }
+
+        // ─── Step header helpers ──────────────────────────────────────────────────
+
+        function updateStepNav() {
+            const backBtn = document.getElementById('step-btn-back');
+            const nextBtn = document.getElementById('step-btn-next');
+            const payBtn  = document.getElementById('btn-stripe-pay');
+            const isFinal = currentStep === cart.length;
+
+            backBtn.style.display = currentStep === 0 ? 'none' : 'flex';
+            nextBtn.style.display = isFinal ? 'none' : 'flex';
+            payBtn.style.display  = isFinal ? 'flex' : 'none';
+
+            if (!isFinal) {
+                nextBtn.innerHTML = currentStep === cart.length - 1
+                    ? 'Review Order Details <i class="fas fa-arrow-right ml-1"></i>'
+                    : 'Save &amp; Next Item <i class="fas fa-arrow-right ml-1"></i>';
+            }
+            if (isFinal) {
+                payBtn.disabled = false;
+                payBtn.innerHTML = 'Pay Securely via Stripe <i class="fab fa-cc-stripe text-xl ml-1"></i>';
+            }
+        }
+
+        function updateStepDots() {
+            const total = cart.length + 1;
+            let html = '';
+            for (let i = 0; i < total; i++) {
+                if (i === currentStep) {
+                    html += '<div class="h-2 w-4 rounded-full bg-[#a084ca] transition-all duration-300"></div>';
+                } else if (i < currentStep) {
+                    html += '<div class="h-2 w-2 rounded-full bg-[#d8cce6] transition-all duration-300"></div>';
+                } else {
+                    html += '<div class="h-2 w-2 rounded-full bg-gray-200 transition-all duration-300"></div>';
+                }
+            }
+            document.getElementById('step-dots').innerHTML = html;
+        }
+
+        function updateStepLabel() {
+            const label = document.getElementById('step-label');
+            if (currentStep < cart.length) {
+                label.textContent = `Step ${currentStep + 1} of ${cart.length}`;
+            } else {
+                label.textContent = 'Order Details';
+            }
+        }
+
+        // ─── Qty update from within a step ───────────────────────────────────────
+
+        window.updateCartQtyInStep = (stepIndex, newQty) => {
+            const item = cart[stepIndex];
+            if (!item) return;
+            item.qty = Math.max(1, parseInt(newQty) || 1);
+            localStorage.setItem('party_cart', JSON.stringify(cart));
+            updateCartUI();
+        };
+
+        // ─── Minimum date helper ──────────────────────────────────────────────────
+
+        function getMinDate() {
+            const today = new Date();
+            today.setDate(today.getDate() + 6);
+            return today.toISOString().split('T')[0];
+        }
+
+        // ─── Checkout ─────────────────────────────────────────────────────────────
+
+        window.processCheckout = async () => {
+            const date      = document.getElementById('cust-date').value;
+            const type      = document.getElementById('cust-type').value;
+            const link      = document.getElementById('cust-link').value || "None provided";
+            const name      = document.getElementById('cust-name').value;
+            const phone     = document.getElementById('cust-phone').value;
+            const email     = document.getElementById('cust-email').value;
+            const confirmed = document.getElementById('cust-confirm').checked;
+
+            if (!date || !type || !name || !phone || !email) {
+                alert("Please fill out all required fields marked with an asterisk (*).");
+                return;
+            }
+            if (!confirmed) {
+                alert("Please check the box confirming your spelling is correct!");
+                return;
+            }
+
+            const btn = document.getElementById('btn-stripe-pay');
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Processing...`;
+            btn.disabled = true;
+
+            try {
+                btn.innerHTML = `<i class="fas fa-lock mr-2"></i> Generating Secure Link...`;
+
+                const cartPayload = cart.map(item => ({
+                    id:           item.id,
+                    name:         item.name,
+                    price:        item.price,
+                    qty:          item.qty,
+                    childName:    item.childName    || '',
+                    childAge:     item.childAge     || '',
+                    exactText:    item.exactText    || '',
+                    theme:        item.theme        || '',
+                    colorPalette:    item.colorPalette    || '',
+                    primaryColorHex: item.primaryColorHex || '',
+                    characters:      item.characters      || '',
+                    refPhotoUrl:  item.refPhotoUrl  || '',
+                    notes:        item.notes        || ''
+                }));
+
+                const res = await fetch(CLOUD_FN_URLS.ECOMMERCE_CHECKOUT, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        cart: cartPayload,
+                        customer: { name, phone, email },
+                        customization: { date, type, link }
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.url) {
+                    localStorage.removeItem('party_cart');
+                    window.location.href = data.url;
+                } else {
+                    alert("Error starting checkout. Please try again.");
+                    btn.innerHTML = "Pay Securely via Stripe <i class='fab fa-cc-stripe text-xl ml-1'></i>";
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                alert("Network error. Please try again.");
+                console.error(e);
+                btn.innerHTML = "Pay Securely via Stripe <i class='fab fa-cc-stripe text-xl ml-1'></i>";
+                btn.disabled = false;
+            }
+        };
+
+        // ─── Photo lightbox ───────────────────────────────────────────────────────
+
+        const photoStore = {};
+        let _lbPhotos = [], _lbIndex = 0;
+
+        window.openLightbox = (docId, index) => {
+            _lbPhotos = photoStore[docId] || [];
+            if (!_lbPhotos.length) return;
+            _lbIndex = index;
+            document.getElementById('lightbox').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            updateLightbox();
+        };
+
+        window.closeLightbox = () => {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = '';
+        };
+
+        window.lightboxNext = (e) => {
+            e && e.stopPropagation();
+            _lbIndex = (_lbIndex + 1) % _lbPhotos.length;
+            updateLightbox();
+        };
+
+        window.lightboxPrev = (e) => {
+            e && e.stopPropagation();
+            _lbIndex = (_lbIndex - 1 + _lbPhotos.length) % _lbPhotos.length;
+            updateLightbox();
+        };
+
+        function updateLightbox() {
+            document.getElementById('lightbox-img').src = _lbPhotos[_lbIndex];
+            const counter = document.getElementById('lightbox-counter');
+            counter.textContent = _lbPhotos.length > 1 ? `${_lbIndex + 1} / ${_lbPhotos.length}` : '';
+        }
+
+        document.addEventListener('keydown', e => {
+            if (document.getElementById('lightbox').style.display === 'none') return;
+            if (e.key === 'Escape') closeLightbox();
+            else if (e.key === 'ArrowRight') lightboxNext();
+            else if (e.key === 'ArrowLeft') lightboxPrev();
+        });
+
+        // ─── Photo card builder ───────────────────────────────────────────────────
+
+        function buildCard(docId, item, photos) {
+            const icon = iconMap[item.name] || "✨";
+            const hasPhotos = photos && photos.length > 0;
+            if (hasPhotos) photoStore[docId] = photos;
+            const safeDocId = escapeAttr(docId);
+
+            const photoArea = hasPhotos ? `
+                <div class="relative bg-[#f3eef7] overflow-hidden rounded-t-[40px] group cursor-pointer"
+                     onclick="openLightbox('${safeDocId}', 0)">
+                    <img class="favor-hero w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
+                        src="${escapeAttr(photos[0])}" alt="${escapeHtml(item.name)}"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <div class="favor-hero-fallback w-full aspect-square hidden items-center justify-center text-5xl bg-[#f3eef7]">${icon}</div>
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center pointer-events-none">
+                        <i class="fas fa-expand-alt text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i>
+                    </div>
+                </div>
+                ${photos.length > 1 ? `
+                <div class="favor-thumbs flex gap-2 px-4 pt-3 overflow-x-auto">
+                    ${photos.map((url, i) => `
+                        <img src="${escapeAttr(url)}" alt=""
+                            onclick="openLightbox('${safeDocId}', ${i})"
+                            class="w-14 h-14 object-cover rounded-xl cursor-pointer border-2 flex-shrink-0 transition-colors ${i === 0 ? 'border-[#a084ca]' : 'border-transparent hover:border-[#d8cce6]'}">`
+                    ).join('')}
+                </div>` : ''}
+            ` : `
+                <div class="flex items-center justify-center bg-[#f3eef7] rounded-t-[40px] aspect-square text-5xl">
+                    ${icon}
+                </div>
+            `;
+
+            return `
+                <div data-favor-card class="bg-white rounded-[40px] shadow-lg border border-[#efe7f5] overflow-hidden flex flex-col hover:-translate-y-2 transition-transform">
+                    ${photoArea}
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="text-lg font-semibold mb-1 text-gray-900">${escapeHtml(item.name)}</h3>
+                        ${item.description ? `<p class="text-gray-500 text-sm mb-3 leading-relaxed">${escapeHtml(item.description)}</p>` : ''}
+                        <p class="text-[#a084ca] font-bold text-xl mb-4">$${escapeHtml(item.price)}</p>
+                        <button onclick="addToCart('${safeDocId}', '${escapeAttr(item.name)}', ${item.price})"
+                            class="mt-auto w-full flex items-center justify-center gap-2 bg-[#f3eef7] text-[#8f6bbf] py-3 rounded-full hover:bg-[#a084ca] hover:text-white transition font-semibold">
+                            <i class="fas fa-cart-plus"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ─── Load inventory ───────────────────────────────────────────────────────
+
+        async function loadItems() {
+            const grid = document.getElementById("party-favors-grid");
+
+            try {
+                const snapshot = await getDocs(query(collection(db, "inventory")));
+                document.getElementById('loading-spinner').style.display = 'none';
+                grid.textContent = '';
+
+                snapshot.forEach(doc => {
+                    const item = doc.data();
+                    if (item.is_active === false || item.category !== "Party Favors") return;
+                    grid.insertAdjacentHTML("beforeend", buildCard(doc.id, item, item.photos || []));
+                });
+
+                if (grid.children.length === 0) {
+                    grid.innerHTML = '<div class="col-span-3 text-center text-gray-400">No party favors available right now.</div>';
+                }
+            } catch (e) {
+                document.getElementById('loading-spinner').style.display = 'none';
+                grid.textContent = '';
+                const errDiv = document.createElement('div');
+                errDiv.className = 'col-span-3 text-center text-red-500';
+                errDiv.textContent = 'Database connection error.';
+                grid.appendChild(errDiv);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            updateCartUI();
+            const result = await window.initFirebase({ initializeApp, getFirestore });
+            db = result.db;
+            loadItems();
+        });
+    </script>
+    <!-- Photo Lightbox -->
+    <div id="lightbox" style="display:none"
+        class="fixed inset-0 bg-black bg-opacity-90 z-[70] items-center justify-center"
+        onclick="closeLightbox()">
+        <button onclick="lightboxPrev(event)"
+            class="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 text-white w-12 h-12 flex items-center justify-center rounded-full bg-white bg-opacity-10 hover:bg-opacity-30 transition text-xl z-10">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <img id="lightbox-img" src="" alt=""
+            class="max-h-[85vh] max-w-[90vw] md:max-w-[78vw] object-contain rounded-2xl shadow-2xl"
+            onclick="event.stopPropagation()">
+        <button onclick="lightboxNext(event)"
+            class="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 text-white w-12 h-12 flex items-center justify-center rounded-full bg-white bg-opacity-10 hover:bg-opacity-30 transition text-xl z-10">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <button onclick="closeLightbox()"
+            class="absolute top-4 right-4 text-white w-10 h-10 flex items-center justify-center rounded-full bg-white bg-opacity-10 hover:bg-opacity-30 transition text-lg z-10">
+            <i class="fas fa-times"></i>
+        </button>
+        <div id="lightbox-counter"
+            class="absolute bottom-5 left-1/2 -translate-x-1/2 text-white text-sm bg-black bg-opacity-50 px-4 py-1.5 rounded-full pointer-events-none"></div>
+    </div>
+
+    <script src="navbar.js"></script>
+</body>
+</html>
