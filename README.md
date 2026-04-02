@@ -243,39 +243,6 @@ stateDiagram-v2
 
 ---
 
-## Screenshots
-
-### Homepage
-<p align="center">
-  <img src="docs/screenshots/homepage/s01-homepage-hero.png" width="700" alt="Homepage hero section with photo carousel">
-</p>
-
-### Booking Flow
-<p align="center">
-  <img src="docs/screenshots/booking-flow/s08-inquiry-form-filled.png" width="700" alt="5-step booking wizard">
-</p>
-<p align="center">
-  <img src="docs/screenshots/booking-flow/s09-party-favors-page.png" width="700" alt="Party favors e-commerce page">
-</p>
-
-### Admin Dashboard
-<p align="center">
-  <img src="docs/screenshots/admin-dashboard/s10-admin-dashboard.png" width="700" alt="Admin dashboard with order management">
-</p>
-<p align="center">
-  <img src="docs/screenshots/admin-dashboard/s10-admin-booking-detail.png" width="700" alt="Booking detail view">
-</p>
-
-### Payments & Email
-<p align="center">
-  <img src="docs/screenshots/payments/s06-stripe-checkout.png" width="700" alt="Stripe checkout page">
-</p>
-<p align="center">
-  <img src="docs/screenshots/payments/s07-confirmation-email.png" width="700" alt="Confirmation email">
-</p>
-
----
-
 ## Tech Stack
 
 | Layer | Technology |
@@ -289,12 +256,6 @@ stateDiagram-v2
 | Ledger | Google Sheets API (gspread) |
 | Hosting | Firebase Hosting (multi-site: prod + test) |
 | Storage | Google Cloud Storage |
-
----
-
-## Documentation
-
-This project includes a comprehensive interactive learning guide. Open [`docs/guided-learning.html`](docs/guided-learning.html) in any browser for a fully standalone, offline-capable documentation experience with 4 tabs (System Guide, Test Environment, Team Onboarding, Backup & Restore) and 74 interactive steps with progress tracking.
 
 ---
 
