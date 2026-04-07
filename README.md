@@ -265,7 +265,7 @@ stateDiagram-v2
 |------|--------|---------------------|
 | Donia Soliman | *TBD* | Team Lead — Facilitated team meetings, maintained project plan, booking system, database setup (Firestore) |
 | Armando Irizarry-Cortes | [@Armando-ic](https://github.com/Armando-ic) | Agenda & Communications Manager — Sponsor communication, meeting agendas/minutes, automated email notifications |
-| Jaron Pirtle | *TBD* | Data Manager — Business process documentation, inventory/admin dashboard, hosting deployment (Firebase) |
+| Jaron Pirtle | [@jpirt60](https://github.com/jpirt60) | Data Manager — Business process documentation, inventory/admin dashboard, hosting deployment (Firebase) |
 | Israel Weldeslassie | *TBD* | Scope & Quality Manager — Project scope definition, quality assurance, booking system, database setup |
 | Ziad Elsayed | *TBD* | Documentation & Risk Manager — Risk tracking, project notebook, payment processing (Stripe) |
 | Rohan Gajbhe | *TBD* | Time & Product Manager — Deadline tracking, QA testing & validation, integration testing |
