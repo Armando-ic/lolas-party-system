@@ -261,6 +261,8 @@ stateDiagram-v2
 
 ## Team
 
+All team members contributed to the design, development, testing, and deployment of this project.
+
 | Name | GitHub | Role / Contributions |
 |------|--------|---------------------|
 | Donia Soliman | *TBD* | Team Lead — Facilitated team meetings, maintained project plan, booking system, database setup (Firestore) |
