@@ -246,7 +246,7 @@ stateDiagram-v2
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+|-------|-----------
 | Frontend | HTML5, Vanilla JavaScript, Tailwind CSS (CDN) |
 | Backend | Python 3.11, Flask, Google Cloud Functions (Gen2) |
 | Database | Google Cloud Firestore (NoSQL) |
@@ -263,12 +263,12 @@ stateDiagram-v2
 
 | Name | GitHub | Role / Contributions |
 |------|--------|---------------------|
-| Armando | [@Armando-ic](https://github.com/Armando-ic) | Project Lead, Backend & DevOps, Cloud Architecture |
-| Jerome | *TBD* | *TBD* |
-| Rohan | *TBD* | *TBD* |
-| Donia | *TBD* | *TBD* |
-| Israel | *TBD* | *TBD* |
-| Zaid | *TBD* | *TBD* |
+| Donia Soliman | *TBD* | Team Lead — Facilitated team meetings, maintained project plan, booking system, database setup (Firestore) |
+| Armando Irizarry-Cortes | [@Armando-ic](https://github.com/Armando-ic) | Agenda & Communications Manager — Sponsor communication, meeting agendas/minutes, automated email notifications |
+| Jaron Pirtle | *TBD* | Data Manager — Business process documentation, inventory/admin dashboard, hosting deployment (Firebase) |
+| Israel Weldeslassie | *TBD* | Scope & Quality Manager — Project scope definition, quality assurance, booking system, database setup |
+| Ziad Elsayed | *TBD* | Documentation & Risk Manager — Risk tracking, project notebook, payment processing (Stripe) |
+| Rohan Gajbhe | *TBD* | Time & Product Manager — Deadline tracking, QA testing & validation, integration testing |
 
 *Built as part of IT-493-005 (Senior Capstone) at George Mason University, Spring 2026.*
 
